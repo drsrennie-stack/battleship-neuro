@@ -2,7 +2,7 @@
 
 ## 1. Project
 
-- Project: Anatomy Armada (review game, nervous system pack)
+- Project: Anatomy Armada (anatomy and physiology review game)
 - Files covered: anatomy-armada.html
 - Date: November 15, 2026 (updated for the popup layout, dropdown menus, warm maroon buttons, question levels and the course card bank)
 
@@ -13,7 +13,7 @@ Target: WCAG 2.2 AA, with AAA contrast where achievable.
 | Criterion | Level | Status | How it is met |
 |---|---|---|---|
 | 1.1.1 Non-text content | A | Met | Every grid square has a text label (for example "C4, hit"). Decorative effects are hidden from assistive technology. |
-| 1.3.1 Info and relationships | A | Met | Landmarks, heading order, fieldset and legend for the question set, definition list for the scoreboard. |
+| 1.3.1 Info and relationships | A | Met | Landmarks, heading order, a labeled group for the Anatomy and Physiology checkboxes, a labeled group for the topic checkboxes, and a definition list for the scoreboard. |
 | 1.4.1 Use of color | A | Met | Hits show an X, misses show a ring, and answer feedback uses text tags, so nothing depends on color alone. |
 | 1.4.3 / 1.4.6 Contrast | AA / AAA | Met with one exception | See the audit in section 3. The warm maroon title word and step numerals are an approved brand exception. |
 | 1.4.10 Reflow | AA | Met | Single column layout at 390 px wide with no horizontal scrolling. |
@@ -26,7 +26,7 @@ Target: WCAG 2.2 AA, with AAA contrast where achievable.
 | 2.4.3 Focus order | A | Met | The game runs in a native modal dialog. Focus moves to the new question, the feedback, or the grid as each phase begins, and returns to Start game when the dialog closes. |
 | 2.4.7 / 2.4.11 Focus visible | AA | Met | 3 px focus ring on every control. |
 | 2.5.8 Target size | AA | Met | Grid squares are about 44 px at phone width and larger on desktop. All buttons are well above the 24 px minimum. |
-| 3.3.2 Labels or instructions | A | Met | The radio group and all buttons have visible labels. |
+| 3.3.2 Labels or instructions | A | Met | The checkboxes and buttons have visible labels. The Topic and Level menus show their names as the starting text and keep an accessible name after a choice is made. |
 | 4.1.2 Name, role, value | A | Met | Sound toggle uses aria-pressed. Grid squares report whether they can be fired on. |
 | 4.1.3 Status messages | AA | Met | Hits, misses, sunk ships and results are announced through a polite live region. |
 
@@ -43,7 +43,6 @@ Target: WCAG 2.2 AA, with AAA contrast where achievable.
 | Navy text on white Topics list | #060B1A | #FFFFFF | 19.6:1 |
 | Red X hit marker on water (non-text) | #FF3B52 | #16306A | 3.6:1 |
 | White text on warm maroon buttons | #FFFFFF | #8A3324 | 8.1:1 |
-| White "Selected" pill text on navy | #FFFFFF | #060B1A | 19.6:1 |
 | Card body text on white | #1E3D4C | #FFFFFF | 11.5:1 |
 | Card heading on white | #060B1A | #FFFFFF | 19.6:1 |
 | Warm maroon eyebrow on white | #8A3324 | #FFFFFF | 8.1:1 |
@@ -65,7 +64,7 @@ Verified with automated browser tests that played complete games at desktop (120
 1. Skip link
 2. Anatomy and Physiology checkboxes, Topic menu button (opens a list of checkboxes grouped by body system, closes with Escape), Level menu (a standard select), Start game. A message says what is still missing if Start game is pressed too early. The game opens in a modal dialog that holds focus and closes with Escape or the Close game button.
 3. Question heading receives focus, then the four answer buttons in order
-4. Feedback heading receives focus, then the Take your shot or Continue button
+4. Feedback heading receives focus, then the Go to the grid or Continue button
 5. Focus moves to the enemy grid. Arrow keys move between squares and Enter fires.
 6. End screen heading receives focus, then Play again and Change question set
 7. Sound and Close game buttons are in the bar at the top of the dialog
