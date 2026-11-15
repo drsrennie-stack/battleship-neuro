@@ -151,6 +151,10 @@ legend{font-family:var(--display);font-weight:700;font-size:1.25rem;margin-botto
 @media (max-width:640px){.hero::after{background:linear-gradient(0deg,rgba(6,11,26,.98) 0%,rgba(6,11,26,.88) 42%,rgba(6,11,26,.1) 100%)}.herotext{padding:20px}}
 dialog{position:absolute;top:0;border:1px solid var(--line);padding:0;margin:12px auto;background:var(--ink);color:var(--white);width:min(1340px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.7)}
 dialog::backdrop{background:rgba(2,4,10,.82)}
+/* The game window must not be a scroll area of its own. Browsers give dialogs overflow:auto, and on a phone a finger
+   that starts on such a box tries to scroll the box, finds nothing to scroll, and springs back. The page does the scrolling. */
+#pop{overflow:visible;overscroll-behavior:auto;touch-action:pan-y pinch-zoom}
+#pop .popbar{border-radius:17px 17px 0 0}
 .lookhere{outline:3px solid #E0B861;outline-offset:3px}
 .popbar{display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid var(--line)}
 .poptitle{font-family:var(--display);font-weight:800;font-size:1.35rem;margin:0}
@@ -344,7 +348,7 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);color:v
 
   </main>
 
-  <footer>Created by Dr. Sharilyn Rennie <span id="build" style="opacity:.55;font-size:.75em">Build 1115-8</span><span id="musicCredit" hidden style="display:block;margin-top:4px"></span></footer>
+  <footer>Created by Dr. Sharilyn Rennie <span id="build" style="opacity:.55;font-size:.75em">Build 1115-9</span><span id="musicCredit" hidden style="display:block;margin-top:4px"></span></footer>
 </div>
 
 
