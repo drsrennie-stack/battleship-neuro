@@ -2,8 +2,8 @@
 
 ## 1. Project
 
-- Project: Anatomy Armada (anatomy and physiology review game)
-- Files covered: anatomy-armada.html
+- Project: Vital Strike (anatomy and physiology review game)
+- Files covered: index.html (the game), vital-strike-share.jpg (link preview picture)
 - Date: November 15, 2026 (updated for the popup layout, dropdown menus, warm maroon buttons, question levels and the course card bank)
 
 ## 2. WCAG version and level
@@ -37,7 +37,7 @@ Target: WCAG 2.2 AA, with AAA contrast where achievable.
 | White body text on page | #FFFFFF | #060B1A | 19.6:1 |
 | Soft text on page | #D5DAE6 | #060B1A | 14.0:1 |
 | Gold eyebrow on page | #E0B861 | #060B1A | 10.5:1 |
-| Warm maroon headline word "Armada" and 01 to 04 numerals (large, decorative) | #8A3324 | #060B1A | 2.4:1, does not pass |
+| Warm maroon headline word "Strike" and 01 to 04 numerals (large, decorative) | #8A3324 | #060B1A | 2.4:1, does not pass |
 | Red result numbers on end screen (large) | #EE7A8B | #060B1A | 7.3:1 |
 | Navy text on gold Topics and Level menus | #060B1A | #E0B861 | 10.5:1 |
 | Navy text on white Topics list | #060B1A | #FFFFFF | 19.6:1 |
