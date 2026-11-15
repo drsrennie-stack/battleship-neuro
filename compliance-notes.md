@@ -4,7 +4,7 @@
 
 - Project: Anatomy Armada (review game, nervous system pack)
 - Files covered: anatomy-armada.html
-- Date: November 15, 2026 (updated for the popup layout, gold cards, maroon buttons and question levels)
+- Date: November 15, 2026 (updated for the popup layout, dropdown menus, warm maroon buttons, question levels and the course card bank)
 
 ## 2. WCAG version and level
 
@@ -15,7 +15,7 @@ Target: WCAG 2.2 AA, with AAA contrast where achievable.
 | 1.1.1 Non-text content | A | Met | Every grid square has a text label (for example "C4, hit"). Decorative effects are hidden from assistive technology. |
 | 1.3.1 Info and relationships | A | Met | Landmarks, heading order, fieldset and legend for the question set, definition list for the scoreboard. |
 | 1.4.1 Use of color | A | Met | Hits show an X, misses show a ring, and answer feedback uses text tags, so nothing depends on color alone. |
-| 1.4.3 / 1.4.6 Contrast | AA / AAA | Met with one exception | See the audit in section 3. The maroon title word and step numerals are an approved brand exception. |
+| 1.4.3 / 1.4.6 Contrast | AA / AAA | Met with one exception | See the audit in section 3. The warm maroon title word and step numerals are an approved brand exception. |
 | 1.4.10 Reflow | AA | Met | Single column layout at 390 px wide with no horizontal scrolling. |
 | 1.4.11 Non-text contrast | AA | Met | Controls, ship shapes and focus rings are 3:1 or higher. |
 | 2.1.1 Keyboard | A | Met | Every control works from the keyboard. The enemy grid uses arrow keys to move and Enter or Space to fire. |
@@ -37,26 +37,26 @@ Target: WCAG 2.2 AA, with AAA contrast where achievable.
 | White body text on page | #FFFFFF | #060B1A | 19.6:1 |
 | Soft text on page | #D5DAE6 | #060B1A | 14.0:1 |
 | Gold eyebrow on page | #E0B861 | #060B1A | 10.5:1 |
-| Maroon headline word "Armada" and 01 to 04 numerals (large, decorative) | #8B1A2B | #060B1A | 2.3:1, does not pass |
+| Warm maroon headline word "Armada" and 01 to 04 numerals (large, decorative) | #8A3324 | #060B1A | 2.4:1, does not pass |
 | Red result numbers on end screen (large) | #EE7A8B | #060B1A | 7.3:1 |
 | Navy text on gold Topics and Level menus | #060B1A | #E0B861 | 10.5:1 |
 | Navy text on white Topics list | #060B1A | #FFFFFF | 19.6:1 |
 | Red X hit marker on water (non-text) | #FF3B52 | #16306A | 3.6:1 |
-| White text on maroon buttons | #FFFFFF | #8B1A2B | 9.2:1 |
+| White text on warm maroon buttons | #FFFFFF | #8A3324 | 8.1:1 |
 | White "Selected" pill text on navy | #FFFFFF | #060B1A | 19.6:1 |
 | Card body text on white | #1E3D4C | #FFFFFF | 11.5:1 |
 | Card heading on white | #060B1A | #FFFFFF | 19.6:1 |
-| Maroon eyebrow on white | #7A1F2B | #FFFFFF | 10.2:1 |
+| Warm maroon eyebrow on white | #8A3324 | #FFFFFF | 8.1:1 |
 | Text on correct-answer fill | #1E3D4C | #EDF1F3 | 10.1:1 |
 | White on navy tag | #FFFFFF | #1E3D4C | 11.5:1 |
-| White on maroon tag | #FFFFFF | #7A1F2B | 10.2:1 |
+| White on warm maroon tag | #FFFFFF | #8A3324 | 8.1:1 |
 | White X on hit square (large bold symbol) | #FFFFFF | #D8374F | 4.6:1 |
 | White miss ring on water (non-text) | #FFFFFF | #16306A | 12.6:1 |
 | Ship shape on water (non-text) | #9FB0CC | #16306A | 5.7:1 |
 | Gold focus ring on water (non-text) | #E0B861 | #16306A | 6.7:1 |
 | Answer button border on white (non-text) | #75818E | #FFFFFF | 4.0:1 |
 
-All pairs pass AA except the maroon headline word and step numerals, which are a brand color choice approved by Dr. Rennie. The page title is also in the browser title, and each numeral sits beside a text label, so no information depends on them. All other text pairs pass AAA except the X on a hit square, which passes AAA for large text.
+All pairs pass AA except the warm maroon headline word and step numerals on the dark page (2.4:1), which are a brand color choice approved by Dr. Rennie. The title is also in the browser title and each numeral sits beside a text label. All other text pairs pass AAA except the X on a hit square, which passes AAA for large text.
 
 ## 4. Keyboard navigation flow verified
 
@@ -76,7 +76,6 @@ Not yet tested with a screen reader. The markup was written for screen reader us
 
 ## 6. Known limitations and remediation plan
 
-- The maroon word "Armada" in the title and the 01 to 04 step numerals are below the 3:1 contrast minimum for large text. This is an approved brand exception.
 - The 3D battlefield is drawn on a canvas that is hidden from assistive technology. The regular grid buttons stay in the page for keyboard and screen reader use, and the square in focus is highlighted in the 3D view. Mouse and touch players click the 3D grid directly.
 - If the 3D library cannot load, WebGL is unavailable, or the player has "reduce motion" turned on, the game uses the flat boards.
 - The animated "how to play" panel plays once, for about 21 seconds, and has a Skip button that stops it (WCAG 2.2.2). A Replay button plays it again. The four steps stay in the page as a list for screen readers, and with "reduce motion" on only the plain list is shown.
