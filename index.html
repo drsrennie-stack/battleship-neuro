@@ -123,6 +123,8 @@ h1 span{color:#8A3324}
 .ddmenu input:focus-visible{outline:3px solid var(--maroon);outline-offset:2px}
 .pickrow + .note{margin:12px 0 22px;min-height:1.5em}
 .startrow{display:flex;flex-direction:column;align-items:center;gap:20px;margin-top:10px}
+.rankline{margin:18px 0 0;text-align:center;font-size:.95rem;color:var(--white)}
+.rankline b{color:var(--gold);letter-spacing:.14em;text-transform:uppercase;font-size:.8rem;margin-right:8px}
 .soon{display:inline-block;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
 fieldset{border:0;margin:0 0 28px;padding:0}
 legend{font-family:var(--display);font-weight:700;font-size:1.25rem;margin-bottom:12px;padding:0}
@@ -332,15 +334,17 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);color:v
         </div>
         <p class="note" id="pickNote" aria-live="polite"></p>
         <div class="startrow">
+          <button class="btn ghost" type="button" id="resumeBtn" hidden>Resume game</button>
           <button class="btn" type="submit">Start game</button>
           <span class="soon">Multiplayer coming soon</span>
         </div>
+        <p class="rankline" id="rankLine" aria-live="polite"></p>
       </form>
     </section>
 
   </main>
 
-  <footer>Created by Dr. Sharilyn Rennie<span id="musicCredit" hidden style="display:block;margin-top:4px"></span></footer>
+  <footer>Created by Dr. Sharilyn Rennie <span id="build" style="opacity:.55;font-size:.75em">Build 1115-8</span><span id="musicCredit" hidden style="display:block;margin-top:4px"></span></footer>
 </div>
 
 
@@ -415,6 +419,7 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);color:v
         <div><b id="endAsked">0</b><span>questions answered</span></div>
         <div><b id="endSunk">0</b><span>enemy ships sunk</span></div>
       </div>
+      <p class="rankline" id="endRank" style="text-align:left;margin:0 0 22px"></p>
       <h3 id="reviewH" style="font-family:var(--display);font-size:1.3rem;margin:0 0 12px">Questions to review</h3>
       <ul class="review" id="review"></ul>
       <div class="row">
@@ -1972,9 +1977,9 @@ function answer(qi,order,pos){
   if(S.phase!=="question") return;
   S.phase="feedback"; S.asked++;
   const q=QS()[qi], ok=order[pos]===0;
-  if(ok){ S.correct++; sfx.right(); } else { sfx.wrong(); S.missed.add(qi); S.retry.push({qi,at:S.asked+3}); }
+  let promo=""; if(ok){ S.correct++; promo=addCorrect(); sfx.right(); } else { sfx.wrong(); S.missed.add(qi); S.retry.push({qi,at:S.asked+3}); }
   hud();
-  const head=el("p",{class:"big",id:"fbHead",tabindex:"-1",text:ok?"Correct. Fire on any square.":"Not quite. The enemy gets a shot."});
+  const head=el("p",{class:"big",id:"fbHead",tabindex:"-1",text:ok?(promo?"Correct. You are promoted to "+promo+". Fire on any square.":"Correct. Fire on any square."):"Not quite. The enemy gets a shot."});
   const list=el("ul",{class:"opts"});
   order.forEach((ai,p)=>{
     const right=ai===0, picked=p===pos;
@@ -1982,21 +1987,22 @@ function answer(qi,order,pos){
     list.appendChild(el("li",{class:"res"+(right?" right":"")+(picked?" picked":"")},[el("b",{text:q.a[ai][0]}),el("span",{class:"tag",text:tag})].concat(q.a[ai][1]?[el("p",{text:q.a[ai][1]})]:[])));
   });
   const go=el("button",{class:"btn dark",type:"button",text:ok?"Go to the grid":"Continue"});
-  go.addEventListener("click",()=>{ if(!ok) return enemyTurn(); if(S.phase==="fire"){ eCell(S.focus).focus({preventScroll:true}); showBoard("enemy"); } });
+  go.addEventListener("click",()=>{ if(!ok) return enemyTurn(); showBoard("enemy"); try{ if(S.phase==="fire") eCell(S.focus).focus({preventScroll:true}); }catch(e){} });
   const card=el("div",{class:"card"},[el("p",{class:"eyebrow",text:"Why each answer is right or wrong"}),head,go,el("p",{text:q.q}),list]);
   $("panel").textContent=""; $("panel").appendChild(card);
   head.focus({preventScroll:true}); reveal(card);
   if(ok){ S.phase="fire"; setTargeting(true,"Your shot: pick any square"); if(S.enemy.shots[S.focus]){ const free=S.enemy.shots.findIndex(v=>!v); if(free>-1) moveFocus(free,false); } }
-  say(ok?"Correct. Pick any square on the enemy grid to fire.":"Not quite.");
+  say(ok?(promo?"Correct. You are promoted to "+promo+". ":"Correct. ")+"Pick any square on the enemy grid to fire.":"Not quite.");
 }
-function reveal(node){ document.querySelector(".field").classList.remove("atgrid"); try{ node.scrollIntoView({block:"nearest",behavior:"auto"}); }catch(e){} }
+function reveal(node){ document.querySelector(".field").classList.remove("atgrid"); try{ node.scrollIntoView({block:"nearest",behavior:"auto"}); }catch(e){} tellHost(node); }
+function tellHost(node){ if(window.parent===window) return; setTimeout(()=>{ try{ const r=node.getBoundingClientRect(); window.parent.postMessage({type:"iframe-scroll",id:"vital-strike",top:Math.max(0,Math.round(r.top+window.scrollY)-12)},"*"); }catch(e){} },60); }
 /* Bring a board to the middle of the screen and flash its edge. The jump is instant and repeated, because a smooth
    scroll is cancelled when the page changes height, which is why the button sometimes seemed to do nothing. */
 function showBoard(side){
   const node=boardEl(side), small=matchMedia("(max-width:860px)").matches;
   document.querySelector(".field").classList.add("atgrid");
   const go=()=>{ try{ node.scrollIntoView({block:small?"start":"center",behavior:"auto"}); }catch(e){} };
-  go(); setTimeout(go,160); setTimeout(go,480);
+  go(); setTimeout(go,160); setTimeout(go,480); tellHost(node);
   node.classList.add("lookhere"); clearTimeout(showBoard.t); showBoard.t=setTimeout(()=>{ boardEl("enemy").classList.remove("lookhere"); boardEl("me").classList.remove("lookhere"); },1200);
 }
 function status(title,text){
@@ -2076,6 +2082,16 @@ async function enemyTurn(){
   }
 }
 
+/* ---------- rank ----------
+   Rank comes from the total number of correct answers on this device, across every game. It is saved in the
+   browser only. Nothing is sent anywhere and no name is attached. */
+const RANKS=[[0,"Ensign"],[15,"Lieutenant"],[40,"Commander"],[80,"Captain"],[150,"Rear Admiral"],[250,"Vice Admiral"],[400,"Admiral"],[600,"Fleet Admiral"]];
+let career=0; try{ career=Math.max(0,parseInt(localStorage.getItem("vsCorrect")||"0",10)||0); }catch(e){}
+const rankAt=n=>{ let k=0; RANKS.forEach((r,i)=>{ if(n>=r[0]) k=i; }); return k; };
+function rankText(){ const k=rankAt(career), nx=RANKS[k+1]; return {name:RANKS[k][1],rest:career+" correct "+(career===1?"answer":"answers")+(nx?". "+(nx[0]-career)+" more to reach "+nx[1]+".":". Top rank reached.")}; }
+function showRank(){ const r=rankText(); ["rankLine","endRank"].forEach(id=>{ const n=$(id); n.textContent=""; n.appendChild(el("b",{text:"Rank: "+r.name})); n.appendChild(document.createTextNode(r.rest)); }); }
+function addCorrect(){ const before=rankAt(career); career++; try{ localStorage.setItem("vsCorrect",String(career)); }catch(e){} showRank(); return rankAt(career)>before?RANKS[rankAt(career)][1]:""; }
+
 /* ---------- screens ---------- */
 function show(id){
   const pop=$("pop");
@@ -2086,7 +2102,7 @@ function show(id){
   G3.run(id==="play");
 }
 function start(){
-  audio(); stopMusic(); ocean(true);
+  audio(); stopMusic(); ocean(true); $("resumeBtn").hidden=true;
   S={phase:"question",enemy:makeFleet(),me:makeFleet(),deck:[],retry:[],last:-1,asked:0,correct:0,missed:new Set(),ai:[],focus:24};
   show("play"); buildBoards(); hud(); nextQuestion();
 }
@@ -2104,7 +2120,19 @@ function finish(won){
   say($("endH").textContent);
 }
 function menu(){ show("start"); }
-$("pop").addEventListener("close",()=>{ G3.run(false); ocean(false); introMusic(); if(S) S.phase="menu"; document.body.style.minHeight=""; const b=document.querySelector("#startForm .btn"); if(b) b.focus({preventScroll:true}); });
+showRank();
+/* Closing the game window by accident (Close game, the Escape key, a phone's back gesture) pauses the game.
+   It can be picked up again with Resume game. */
+function resume(){
+  if(!S||!S.paused) return; const p=S.paused; S.paused=null; $("resumeBtn").hidden=true;
+  audio(); stopMusic(); ocean(true); show("play");
+  if(p==="next") nextQuestion(); else S.phase=p;
+}
+$("resumeBtn").addEventListener("click",resume);
+$("pop").addEventListener("close",()=>{ G3.run(false); ocean(false); introMusic();
+  if(S&&S.phase!=="end"&&S.phase!=="menu"){ S.paused=(S.phase==="question"||S.phase==="feedback"||S.phase==="fire")?S.phase:"next"; $("resumeBtn").hidden=false; }
+  else if(S&&S.phase==="end"){ S.paused=null; $("resumeBtn").hidden=true; }
+  if(S) S.phase="menu"; document.body.style.minHeight=""; const b=document.querySelector("#startForm .btn"); if(b) b.focus({preventScroll:true}); });
 if(window.ResizeObserver) new ResizeObserver(()=>{ const pop=$("pop"); document.body.style.minHeight=pop.open?(pop.offsetHeight+24)+"px":""; }).observe($("pop"));
 
 /* ---------- intro: each direction fades in and out slowly, then the title appears ---------- */
@@ -2123,6 +2151,7 @@ if(window.ResizeObserver) new ResizeObserver(()=>{ const pop=$("pop"); document.
   let timers=[]; const later=(fn,ms)=>timers.push(setTimeout(fn,ms)), STEP=7000, SHOW=5600;
   const cta=$("introCta");
   function close(){
+    try{ sessionStorage.setItem("vsIntro","1"); }catch(e){}
     timers.forEach(clearTimeout); timers=[]; introMusic(); wrap.inert=false; cta.classList.remove("on"); intro.classList.add("bye");
     setTimeout(()=>{ intro.hidden=true; intro.classList.remove("bye"); stage.textContent=""; },820);
     $("sb_anatomy").focus({preventScroll:true});
@@ -2143,7 +2172,9 @@ if(window.ResizeObserver) new ResizeObserver(()=>{ const pop=$("pop"); document.
   skipB.addEventListener("click",close);
   intro.addEventListener("keydown",e=>{ if(e.key==="Escape"||(e.key==="Enter"&&e.target===intro&&cta.classList.contains("on"))) close(); });
   $("replayBtn").addEventListener("click",()=>{ $("help").close(); if($("pop").open) $("pop").close(); open(); });
-  open();
+  /* The story plays once per visit. If the page reloads, it goes straight to the start page. */
+  let seen=false; try{ seen=sessionStorage.getItem("vsIntro")==="1"; }catch(e){}
+  if(seen) introMusic(); else open();
 })();
 
 /* ---------- How to play window ---------- */

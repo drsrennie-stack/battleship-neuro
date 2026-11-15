@@ -103,3 +103,11 @@ Prepared by Claude for Dr. Sharilyn Rennie. Awaiting her review.
 - Top bar on phones is shorter (about 133 px, was 196 px) so the question card starts higher.
 - Scroll jumps are instant, with no smooth scrolling.
 - Tested at emulated phone size (390 px) and laptop size (1280 by 640) in Chromium. Not yet tested on a real phone or inside Kajabi.
+
+## Update, November 15, 2026 (resume, rank, host scrolling)
+
+- Resume game: closing the game window (Close game, Escape, or a phone's back gesture) pauses the game. A Resume game button appears on the start page. This prevents losing a game through an accidental action (WCAG 3.3.4 spirit, error prevention).
+- The opening story plays once per visit. A page reload goes straight to the start page.
+- Rank: total correct answers on the device set a rank (Ensign to Fleet Admiral). Saved in the browser's local storage only. No name, no account, nothing sent to a server. A promotion is announced in the feedback heading and in the live region.
+- "Go to the grid" always switches to the battlefield. When the game is inside an iframe it also sends the host page a message (type "iframe-scroll") so the host can scroll to the right place.
+- A small build number shows in the footer so the loaded version can be confirmed.
