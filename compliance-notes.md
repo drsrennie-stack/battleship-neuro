@@ -39,7 +39,9 @@ Target: WCAG 2.2 AA, with AAA contrast where achievable.
 | Gold eyebrow on page | #E0B861 | #060B1A | 10.5:1 |
 | Maroon headline word "Armada" and 01 to 04 numerals (large, decorative) | #8B1A2B | #060B1A | 2.3:1, does not pass |
 | Red result numbers on end screen (large) | #EE7A8B | #060B1A | 7.3:1 |
-| Navy text on gold topic and level cards | #060B1A | #E0B861 | 10.5:1 |
+| Navy text on gold Topics and Level menus | #060B1A | #E0B861 | 10.5:1 |
+| Navy text on white Topics list | #060B1A | #FFFFFF | 19.6:1 |
+| Red X hit marker on water (non-text) | #FF3B52 | #16306A | 3.6:1 |
 | White text on maroon buttons | #FFFFFF | #8B1A2B | 9.2:1 |
 | White "Selected" pill text on navy | #FFFFFF | #060B1A | 19.6:1 |
 | Card body text on white | #1E3D4C | #FFFFFF | 11.5:1 |
@@ -61,7 +63,7 @@ All pairs pass AA except the maroon headline word and step numerals, which are a
 Verified with automated browser tests that played complete games at desktop (1200 px) and phone (390 px) widths.
 
 1. Skip link
-2. Topic radio buttons, level radio buttons, Start game. The game opens in a modal dialog that holds focus and closes with Escape or the Close game button.
+2. Topics menu button (opens a list of checkboxes, closes with Escape), Level menu (a standard select), Start game. The game opens in a modal dialog that holds focus and closes with Escape or the Close game button.
 3. Question heading receives focus, then the four answer buttons in order
 4. Feedback heading receives focus, then the Take your shot or Continue button
 5. Focus moves to the enemy grid. Arrow keys move between squares and Enter fires.
@@ -77,7 +79,7 @@ Not yet tested with a screen reader. The markup was written for screen reader us
 - The maroon word "Armada" in the title and the 01 to 04 step numerals are below the 3:1 contrast minimum for large text. This is an approved brand exception.
 - The 3D battlefield is drawn on a canvas that is hidden from assistive technology. The regular grid buttons stay in the page for keyboard and screen reader use, and the square in focus is highlighted in the 3D view. Mouse and touch players click the 3D grid directly.
 - If the 3D library cannot load, WebGL is unavailable, or the player has "reduce motion" turned on, the game uses the flat boards.
-- The animated "how to play" panel has a Pause button (WCAG 2.2.2). Pausing shows all four steps as a plain list, and with "reduce motion" on only the plain list is shown.
+- The animated "how to play" panel plays once, for about 21 seconds, and has a Skip button that stops it (WCAG 2.2.2). A Replay button plays it again. The four steps stay in the page as a list for screen readers, and with "reduce motion" on only the plain list is shown.
 - Screen reader testing is still needed. Plan: run one full game in VoiceOver or NVDA and confirm the announcements read in a sensible order.
 - A blind player can fire on the enemy grid and hears every result, but the layout of their own fleet is summarized (ships afloat and hits taken) instead of read square by square.
 - Sound effects have no captions. Every sound has a matching text announcement, and sound can be turned off.
