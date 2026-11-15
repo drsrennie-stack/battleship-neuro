@@ -63,7 +63,7 @@ All pairs pass AA except the warm maroon headline word and step numerals on the 
 Verified with automated browser tests that played complete games at desktop (1200 px) and phone (390 px) widths.
 
 1. Skip link
-2. Topics menu button (opens a list of checkboxes, closes with Escape), Level menu (a standard select), Start game. The game opens in a modal dialog that holds focus and closes with Escape or the Close game button.
+2. Anatomy and Physiology checkboxes, Topic menu button (opens a list of checkboxes grouped by body system, closes with Escape), Level menu (a standard select), Start game. A message says what is still missing if Start game is pressed too early. The game opens in a modal dialog that holds focus and closes with Escape or the Close game button.
 3. Question heading receives focus, then the four answer buttons in order
 4. Feedback heading receives focus, then the Take your shot or Continue button
 5. Focus moves to the enemy grid. Arrow keys move between squares and Enter fires.
