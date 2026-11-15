@@ -95,3 +95,11 @@ Prepared by Claude for Dr. Sharilyn Rennie. Awaiting her review.
 - Levels: Easy uses course cards tagged DOK 1. Advanced uses DOK 2 and 3. Expert has starter sets only so far.
 - Music: the theme now starts on the first tap, click or key press if the browser blocked it at page load. The music note button still turns all sound off (1.4.2 Audio Control).
 - Tested on an emulated iPhone 13 in Chromium only. Not yet tested on a real phone or with a phone screen reader (VoiceOver, TalkBack).
+
+## Update, November 15, 2026 (phone view switching)
+
+- On screens up to 860 px wide the game shows one view at a time: the question card, or the battlefield after "Go to the grid". The battlefield stays up until the shots are used, then the next question returns. Nothing depends on scrolling, which was unreliable inside the Kajabi page.
+- The hidden view is removed from the tab order and from screen readers (display none for the card, visibility hidden for the battlefield). The keyboard and screen reader grid is unchanged.
+- Top bar on phones is shorter (about 133 px, was 196 px) so the question card starts higher.
+- Scroll jumps are instant, with no smooth scrolling.
+- Tested at emulated phone size (390 px) and laptop size (1280 by 640) in Chromium. Not yet tested on a real phone or inside Kajabi.
