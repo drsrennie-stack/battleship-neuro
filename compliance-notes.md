@@ -3,7 +3,7 @@
 ## 1. Project
 
 - Project: Vital Strike (anatomy and physiology review game)
-- Files covered: index.html (the game), vital-strike-share.jpg (link preview picture)
+- Files covered: anatomy-armada.html (the game), anatomy-armada-share.jpg (link preview picture)
 - Date: November 15, 2026 (updated for the popup layout, dropdown menus, warm maroon buttons, question levels and the course card bank)
 
 ## 2. WCAG version and level
@@ -62,7 +62,7 @@ All pairs pass AA except the warm maroon headline word and step numerals on the 
 Verified with automated browser tests that played complete games at desktop (1200 px) and phone (390 px) widths.
 
 1. Skip link
-2. Anatomy and Physiology checkboxes, Topic menu button (opens a list of checkboxes grouped by body system, closes with Escape), Level menu (a standard select), Start game. A message says what is still missing if Start game is pressed too early. The game opens in a modal dialog that holds focus and closes with Escape or the Close game button.
+2. Sound and How to play buttons in the banner, Anatomy and Physiology checkboxes, Topic menu button (opens a list with one checkbox per body system and a + button that shows the topics inside each system, closes with Escape), Level menu (a standard select), Start game. A message says what is still missing if Start game is pressed too early. The game opens in a modal dialog that holds focus and closes with Escape or the Close game button.
 3. Question heading receives focus, then the four answer buttons in order
 4. Feedback heading receives focus, then the Go to the grid or Continue button
 5. Focus moves to the enemy grid. Arrow keys move between squares and Enter fires.
@@ -77,7 +77,8 @@ Not yet tested with a screen reader. The markup was written for screen reader us
 
 - The 3D battlefield is drawn on a canvas that is hidden from assistive technology. The regular grid buttons stay in the page for keyboard and screen reader use, and the square in focus is highlighted in the 3D view. Mouse and touch players click the 3D grid directly.
 - If the 3D library cannot load, WebGL is unavailable, or the player has "reduce motion" turned on, the game uses the flat boards.
-- The animated "how to play" panel plays once, for about 21 seconds, and has a Skip button that stops it (WCAG 2.2.2). A Replay button plays it again. The four steps stay in the page as a list for screen readers, and with "reduce motion" on only the plain list is shown.
+- The opening intro starts only after the player presses Press start, runs for about 24 seconds, and has a Skip intro button the whole time (WCAG 2.2.2). The directions are also in the How to play window, opened with the "?" button. With "reduce motion" on, the intro is skipped entirely.
+- Theme music starts only after the player presses a button, and a sound button in the banner turns it off (WCAG 1.4.2). It fades out when the game starts.
 - Screen reader testing is still needed. Plan: run one full game in VoiceOver or NVDA and confirm the announcements read in a sensible order.
 - A blind player can fire on the enemy grid and hears every result, but the layout of their own fleet is summarized (ships afloat and hits taken) instead of read square by square.
 - Sound effects have no captions. Every sound has a matching text announcement, and sound can be turned off.
