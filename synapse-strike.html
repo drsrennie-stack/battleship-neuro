@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Synapse Strike</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#060B1A; --deep:#0B1330; --sea:#10214A; --sea2:#16306A;
+  --line:rgba(255,255,255,.16); --white:#FFFFFF; --soft:#D5DAE6;
+  --gold:#E0B861; --red:#EE7A8B; --hit:#D8374F; --maroon:#7A1F2B;
+  --navy:#1E3D4C; --navy-tint:#EDF1F3; --hull:#9FB0CC; --hull-dark:#4B5873;
+  --display:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{font-style:normal}
+body{margin:0;background:var(--ink);color:var(--white);font-family:var(--body);font-size:17px;line-height:1.5;overflow-x:hidden}
+em,i,cite,address{font-style:normal}
+[hidden]{display:none!important}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+.skip{position:absolute;left:12px;top:-60px;background:var(--white);color:var(--ink);padding:10px 16px;border-radius:6px;font-weight:700;z-index:50}
+.skip:focus{top:12px}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.card :focus-visible{outline-color:var(--maroon)}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 40px}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:24px}
+.eyebrow{font-family:var(--body);font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 8px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2.2rem,6vw,3.6rem);line-height:1.02;margin:0;letter-spacing:-.02em}
+h1 span{color:#8B1A2B}
+.tools{display:flex;gap:10px;flex-wrap:wrap}
+.btn{font-family:var(--body);font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border-radius:999px;padding:14px 26px;border:1px solid rgba(255,255,255,.35);background:#8B1A2B;color:var(--white);cursor:pointer;transition:transform 200ms ease,box-shadow 200ms ease}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.45)}
+.btn.ghost{background:transparent;color:var(--white);border-color:var(--line);padding:10px 18px;font-size:12px}
+.btn.dark{border-color:#8B1A2B}
+
+/* start screen */
+.lead{font-size:1.15rem;color:var(--soft);max-width:44rem;margin:0 0 26px}
+.steps{list-style:none;margin:0 0 30px;padding:0;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.steps li{padding:22px 20px;border-right:1px solid var(--line)}
+.steps li:last-child{border-right:0}
+.num{display:block;font-family:var(--display);font-weight:800;font-size:3rem;line-height:1;color:#8B1A2B;margin-bottom:10px}
+.steps strong{display:block;font-family:var(--display);font-size:1.05rem;margin-bottom:4px}
+.steps p{margin:0;color:var(--soft);font-size:.98rem}
+fieldset{border:0;margin:0 0 28px;padding:0}
+legend{font-family:var(--display);font-weight:700;font-size:1.25rem;margin-bottom:12px;padding:0}
+.sets{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.set{position:relative}
+.set input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.set label{display:block;border:1px solid var(--gold);border-radius:14px;padding:20px 22px;background:var(--gold);color:var(--ink);height:100%;transition:transform 200ms ease,box-shadow 200ms ease}
+.set label b{display:block;font-family:var(--display);font-weight:800;font-size:1.25rem;margin-bottom:4px;color:var(--ink)}
+.set label span{display:block;color:var(--ink);font-size:.98rem}
+.set label .pill{display:inline-block;margin-top:12px;border:1px solid var(--ink);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+.set .pill::before{content:"Choose"}
+.set input:checked + label{box-shadow:0 0 0 4px var(--white)}
+.set input:checked + label .pill{color:var(--white);background:var(--ink)}
+.set input:checked + label .pill::before{content:"\2713  Selected"}
+.set input:focus-visible + label{outline:3px solid var(--white);outline-offset:7px}
+.sets.three{grid-template-columns:repeat(3,1fr)}
+.note{margin:14px 0 0;color:var(--soft)}
+.set:hover label{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.45)}
+
+.shipart{width:min(100%,500px);height:auto;flex:1 1 300px;overflow:hidden}
+.shipbob{animation:shipbob 5s ease-in-out infinite alternate;transform-origin:330px 180px}
+.w1{animation:wslide 5s linear infinite}.w2{animation:wslide 8s linear infinite reverse}
+@keyframes shipbob{from{transform:translateY(-3px) rotate(-.7deg)}to{transform:translateY(4px) rotate(.7deg)}}
+@keyframes wslide{to{transform:translateX(60px)}}
+dialog{position:absolute;top:0;border:1px solid var(--line);padding:0;margin:12px auto;background:var(--ink);color:var(--white);width:min(1220px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.7)}
+dialog::backdrop{background:rgba(2,4,10,.82)}
+.popbar{display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid var(--line)}
+.poptitle{font-family:var(--display);font-weight:800;font-size:1.35rem;margin:0}
+.poptitle span{color:#8B1A2B}
+.popbar .hud{margin:0;flex:1 1 320px;max-width:520px}
+.popbar .hud div{padding:6px 14px}
+.popbar .hud dd{font-size:1.05rem}
+#play{padding:18px 20px 22px}
+#end{padding:26px 24px 30px}
+/* play screen */
+.hud{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:14px;margin-bottom:20px;overflow:hidden}
+.hud div{padding:12px 18px;border-right:1px solid var(--line)}
+.hud div:last-child{border-right:0}
+.hud dt{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.hud dd{margin:2px 0 0;font-family:var(--display);font-weight:700;font-size:1.2rem}
+.hud{margin-top:0}
+.field{display:grid;grid-template-columns:minmax(0,220px) minmax(0,430px) minmax(0,1fr);grid-template-areas:"fleet enemy panel";gap:20px 24px;align-items:start}
+.enemy{grid-area:enemy}.panelwrap{grid-area:panel}.fleet{grid-area:fleet}
+h2{font-family:var(--display);font-weight:700;font-size:1.1rem;margin:0 0 10px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+h2 small.go{color:var(--gold);font-weight:700;font-size:1rem}
+.sea.targeting{box-shadow:0 0 0 3px var(--gold),0 0 28px rgba(224,184,97,.45)}
+h2 small{font-family:var(--body);font-weight:500;font-size:.9rem;color:var(--soft)}
+.board{display:grid;grid-template-columns:1.5rem minmax(0,1fr);grid-template-rows:1.5rem auto;position:relative}
+.cols{grid-column:2;display:grid;grid-template-columns:repeat(7,1fr);text-align:center}
+.rows{grid-row:2;display:grid;grid-template-rows:repeat(7,1fr);align-items:center}
+.cols span,.rows span{font-size:12px;font-weight:700;color:var(--soft);letter-spacing:.08em}
+.sea{grid-column:2;grid-row:2;display:grid;grid-template-columns:repeat(7,1fr);position:relative;overflow:hidden;border-radius:12px;aspect-ratio:1;background:linear-gradient(160deg,var(--sea2),var(--sea) 55%,#0B1840);border:1px solid var(--line)}
+.sea::before{content:"";position:absolute;inset:-14px 0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='44' viewBox='0 0 120 44'%3E%3Cpath d='M0 22 Q30 8 60 22 T120 22' fill='none' stroke='%23fff' stroke-opacity='.16' stroke-width='2'/%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='190' height='64' viewBox='0 0 190 64'%3E%3Cpath d='M0 32 Q47.5 12 95 32 T190 32' fill='none' stroke='%23fff' stroke-opacity='.08' stroke-width='3'/%3E%3C/svg%3E");background-size:120px 44px,190px 64px;animation:waves 10s linear infinite,bob 4.5s ease-in-out infinite alternate;pointer-events:none}
+.sea.targeting::after{content:"";position:absolute;inset:-50%;background:conic-gradient(from 0deg,rgba(224,184,97,0) 0deg 290deg,rgba(224,184,97,.28) 360deg);animation:sweep 3.4s linear infinite;pointer-events:none}
+@keyframes waves{to{background-position:120px 0,-190px 0}}
+@keyframes bob{from{transform:translateY(-6px)}to{transform:translateY(6px)}}
+@keyframes sweep{to{transform:rotate(360deg)}}
+.cell{position:relative;z-index:1;border:0;border-right:1px solid rgba(255,255,255,.11);border-bottom:1px solid rgba(255,255,255,.11);background:transparent;padding:0;margin:0;color:var(--white);font:inherit;min-width:0;display:grid;place-items:center}
+button.cell{cursor:pointer}
+button.cell[aria-disabled="true"]{cursor:default}
+.targeting button.cell:not(.shot):hover{background:rgba(224,184,97,.22);box-shadow:inset 0 0 0 2px var(--gold)}
+button.cell:focus-visible{outline:3px solid var(--gold);outline-offset:-3px;z-index:3}
+.mark{position:relative;z-index:2;font-weight:800;line-height:1;font-size:clamp(.9rem,2.6vw,1.4rem)}
+.cell.miss .mark{width:34%;aspect-ratio:1;border-radius:50%;border:2px solid var(--white);background:rgba(255,255,255,.2)}
+.cell.hit{background:radial-gradient(circle,rgba(238,90,110,.95) 0 34%,rgba(216,55,79,.5) 60%,rgba(216,55,79,.12) 100%);animation:burn 1.6s ease-in-out infinite alternate}
+@keyframes burn{from{filter:brightness(.92)}to{filter:brightness(1.2)}}
+.cell.ship::before{content:"";position:absolute;inset:18% 0;background:var(--hull);z-index:0}
+.cell.ship[data-o="v"]::before{inset:0 18%}
+.cell.ship[data-o="h"][data-end="start"]::before{left:12%;border-radius:999px 0 0 999px}
+.cell.ship[data-o="h"][data-end="end"]::before{right:12%;border-radius:0 8px 8px 0}
+.cell.ship[data-o="v"][data-end="start"]::before{top:12%;border-radius:999px 999px 0 0}
+.cell.ship[data-o="v"][data-end="end"]::before{bottom:12%;border-radius:0 0 8px 8px}
+.cell.sunk::before{background:var(--hull-dark)}
+.cell.sunk{animation:none;background:rgba(216,55,79,.28)}
+.fleet .board{max-width:220px}
+.toast{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);background:var(--white);color:var(--ink);font-family:var(--display);font-weight:800;font-size:1.15rem;padding:12px 22px;border-radius:999px;box-shadow:0 12px 30px rgba(0,0,0,.5);z-index:6;white-space:nowrap;pointer-events:none}
+
+/* panel card */
+.card{background:var(--white);color:var(--navy);border-radius:16px;padding:24px;box-shadow:0 14px 34px rgba(0,0,0,.45);animation:rise 320ms ease both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.card .eyebrow{color:var(--maroon);margin-bottom:10px}
+.card h3{font-family:var(--display);font-weight:800;font-size:1.3rem;line-height:1.25;margin:0 0 16px;color:var(--ink)}
+.card p{margin:0 0 14px}
+.opts{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.opt{width:100%;text-align:left;font:inherit;font-weight:500;color:var(--ink);background:var(--white);border:1px solid #75818E;border-radius:12px;padding:13px 16px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;transition:transform 200ms ease,box-shadow 200ms ease}
+.opt:hover{transform:translateY(-2px);box-shadow:0 8px 16px rgba(0,0,0,.14);border-color:var(--navy)}
+.opt .key{flex:none;width:1.7rem;height:1.7rem;border-radius:50%;border:1px solid var(--navy);display:grid;place-items:center;font-size:.85rem;font-weight:700;color:var(--navy)}
+.res{border:1px solid #C9D1D8;border-radius:12px;padding:12px 16px}
+.res.right{border-color:var(--navy);background:var(--navy-tint)}
+.res b{display:block;color:var(--ink)}
+.res span.tag{display:inline-block;margin:6px 0 4px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;border-radius:999px;padding:2px 10px;border:1px solid var(--navy);color:var(--navy)}
+.res.right span.tag{background:var(--navy);color:var(--white)}
+.res.picked:not(.right) span.tag{border-color:var(--maroon);color:var(--white);background:var(--maroon)}
+.res p{margin:0;font-size:.97rem}
+.card .btn{margin:2px 0 16px}
+.big{font-family:var(--display);font-weight:800;font-size:1.5rem;color:var(--ink);margin:0 0 6px}
+
+/* end */
+.endgrid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:22px 0 26px}
+.endgrid div{padding:18px 20px;border-right:1px solid var(--line)}
+.endgrid div:last-child{border-right:0}
+.endgrid b{display:block;font-family:var(--display);font-weight:800;font-size:2.4rem;color:var(--red);line-height:1.1}
+.endgrid span{color:var(--soft)}
+.review{display:grid;gap:14px;margin:0 0 28px;padding:0;list-style:none}
+.review li{background:var(--white);color:var(--navy);border-radius:14px;padding:18px 20px;box-shadow:0 10px 24px rgba(0,0,0,.4)}
+.review b{display:block;color:var(--ink);font-family:var(--display);margin-bottom:6px}
+.review p{margin:0}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);color:var(--soft);font-size:.9rem}
+
+/* effects */
+#fx{position:fixed;inset:0;pointer-events:none;z-index:40;overflow:hidden}
+.shell{position:fixed;left:0;top:0;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:#FFF3C4;box-shadow:0 0 0 4px rgba(224,184,97,.55),0 0 26px 10px rgba(238,122,139,.75)}
+.ring{position:fixed;left:0;top:0;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:3px solid #fff}
+.spark{position:fixed;left:0;top:0;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--gold)}
+.flash{position:fixed;left:0;top:0;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;background:radial-gradient(circle,#fff 0,#FFD27A 35%,rgba(238,90,110,.8) 60%,rgba(238,90,110,0) 72%)}
+
+@media (max-width:1080px){
+  .field{grid-template-columns:minmax(0,400px) minmax(0,1fr);grid-template-areas:"enemy panel" "fleet panel"}
+}
+@media (max-width:860px){
+  .field{grid-template-columns:minmax(0,1fr);grid-template-areas:"panel" "enemy" "fleet"}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .steps li:nth-child(2){border-right:0}
+  .steps li:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .fleet .board{max-width:260px}
+}
+@media (max-width:560px){
+  .sets,.sets.three,.steps{grid-template-columns:1fr}
+  .steps li{border-right:0;border-bottom:1px solid var(--line)}
+  .steps li:last-child{border-bottom:0}
+  .hud dd{font-size:1rem}.hud div{padding:10px 12px}
+  .endgrid{grid-template-columns:1fr}.endgrid div{border-right:0;border-bottom:1px solid var(--line)}
+  .card{padding:18px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .btn:hover,.opt:hover,.set:hover label{transform:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#game">Skip to the game</a>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow">MedMasters Collaborative &middot; Nervous System Review</p>
+      <h1>Synapse <span>Strike</span></h1>
+    </div>
+    <svg class="shipart" viewBox="0 0 660 230" aria-hidden="true" focusable="false">
+      <g class="shipbob">
+        <path d="M300 44V8" stroke="#9FB0CC" stroke-width="4"/>
+        <path d="M302 10l30 9-30 9z" fill="#8B1A2B"/>
+        <rect x="280" y="24" width="40" height="6" rx="3" fill="#9FB0CC"/>
+        <rect x="285" y="44" width="30" height="20" fill="#B5C3DB"/>
+        <rect x="268" y="64" width="64" height="38" fill="#9FB0CC"/>
+        <path d="M344 74h26l4 28h-34z" fill="#7F90AE"/>
+        <rect x="228" y="102" width="156" height="38" fill="#B5C3DB"/>
+        <g fill="#060B1A"><rect x="278" y="72" width="44" height="7"/><rect x="242" y="112" width="12" height="8"/><rect x="264" y="112" width="12" height="8"/><rect x="286" y="112" width="12" height="8"/><rect x="308" y="112" width="12" height="8"/><rect x="330" y="112" width="12" height="8"/><rect x="352" y="112" width="12" height="8"/></g>
+        <g stroke="#7F90AE" stroke-width="7" stroke-linecap="round"><path d="M430 110l58-13"/><path d="M474 126l62-13"/><path d="M190 110l-56-13"/><path d="M142 126l-62-13"/></g>
+        <g fill="#9FB0CC"><rect x="390" y="102" width="42" height="20" rx="6"/><rect x="430" y="120" width="46" height="20" rx="6"/><rect x="188" y="102" width="40" height="20" rx="6"/><rect x="140" y="120" width="46" height="20" rx="6"/></g>
+        <path d="M36 138h470l124-8-62 54H64z" fill="#8FA0BF"/>
+        <path d="M54 168h532l-18 16H64z" fill="#4B5873"/>
+        <g fill="#060B1A"><circle cx="110" cy="153" r="4"/><circle cx="160" cy="153" r="4"/><circle cx="210" cy="153" r="4"/><circle cx="260" cy="153" r="4"/><circle cx="310" cy="153" r="4"/><circle cx="360" cy="153" r="4"/><circle cx="410" cy="153" r="4"/><circle cx="460" cy="153" r="4"/><circle cx="510" cy="153" r="4"/></g>
+      </g>
+      <g fill="none" stroke-linecap="round">
+        <path class="w1" d="M-60 190q30-14 60 0t60 0 60 0 60 0 60 0 60 0 60 0 60 0 60 0 60 0 60 0 60 0" stroke="#E0B861" stroke-width="4"/>
+        <path class="w2" d="M-90 208q30-12 60 0t60 0 60 0 60 0 60 0 60 0 60 0 60 0 60 0 60 0 60 0 60 0 60 0" stroke="#FFFFFF" stroke-opacity=".45" stroke-width="3"/>
+      </g>
+    </svg>
+  </header>
+
+  <main id="game" tabindex="-1">
+    <!-- START -->
+    <section id="start" aria-labelledby="startH">
+      <h2 id="startH" class="sr-only">How to play</h2>
+      <p class="lead">Answer questions to sink the enemy fleet. There is no timer.</p>
+      <ol class="steps">
+        <li><span class="num" aria-hidden="true">01</span><strong>Answer</strong><p>Every turn starts with a question.</p></li>
+        <li><span class="num" aria-hidden="true">02</span><strong>Fire</strong><p>Right answer: fire on any square.</p></li>
+        <li><span class="num" aria-hidden="true">03</span><strong>Defend</strong><p>Wrong answer: the enemy fires at you.</p></li>
+        <li><span class="num" aria-hidden="true">04</span><strong>Win</strong><p>Sink all 4 enemy ships first.</p></li>
+      </ol>
+      <form id="startForm">
+        <fieldset>
+          <legend>Choose a topic</legend>
+          <div class="sets">
+            <div class="set">
+              <input type="radio" name="topic" id="setA" value="anatomy" checked>
+              <label for="setA"><b>Neuroanatomy</b><span>Structures and where they are.</span><span class="pill" aria-hidden="true"></span></label>
+            </div>
+            <div class="set">
+              <input type="radio" name="topic" id="setP" value="physiology">
+              <label for="setP"><b>Neurophysiology</b><span>How neurons signal.</span><span class="pill" aria-hidden="true"></span></label>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Choose a level</legend>
+          <div class="sets three">
+            <div class="set">
+              <input type="radio" name="level" id="lvE" value="easy">
+              <label for="lvE"><b>Easy</b><span>Key terms.</span><span class="pill" aria-hidden="true"></span></label>
+            </div>
+            <div class="set">
+              <input type="radio" name="level" id="lvA" value="advanced" checked>
+              <label for="lvA"><b>Advanced</b><span>College level.</span><span class="pill" aria-hidden="true"></span></label>
+            </div>
+            <div class="set">
+              <input type="radio" name="level" id="lvX" value="expert">
+              <label for="lvX"><b>Expert</b><span>Graduate and medical level.</span><span class="pill" aria-hidden="true"></span></label>
+            </div>
+          </div>
+          <p class="note">16 questions in every set.</p>
+        </fieldset>
+        <button class="btn" type="submit">Start game</button>
+      </form>
+    </section>
+
+  </main>
+
+  <footer>Created by Dr. Sharilyn Rennie</footer>
+</div>
+
+
+<dialog id="pop" aria-labelledby="popT">
+  <div class="popbar">
+    <p class="poptitle" id="popT">Synapse <span>Strike</span></p>
+    <dl class="hud">
+        <div><dt>Enemy ships</dt><dd id="hudEnemy">4 of 4</dd></div>
+        <div><dt>Your ships</dt><dd id="hudMe">4 of 4</dd></div>
+        <div><dt>Correct</dt><dd id="hudQ">0 of 0</dd></div>
+      </dl>
+    <div class="tools">
+      <button class="btn ghost" id="soundBtn" type="button" aria-pressed="true">Sound: On</button>
+      <button class="btn ghost" id="quitBtn" type="button">Close game</button>
+    </div>
+  </div>
+    <!-- PLAY -->
+    <section id="play" aria-labelledby="playH">
+      <h2 id="playH" class="sr-only">Game in progress</h2>
+      
+      <div class="field">
+        <div class="panelwrap" id="panel"></div>
+        <section class="enemy" aria-labelledby="enemyH">
+          <h2 id="enemyH">Enemy waters <small id="enemyHint">Answer a question to earn a shot</small></h2>
+          <div class="board" id="enemyBoard">
+            <div class="cols" aria-hidden="true"></div>
+            <div class="rows" aria-hidden="true"></div>
+            <div class="sea" id="enemySea" role="group" aria-label="Enemy waters, 7 by 7 grid. Use the arrow keys to move and Enter to fire."></div>
+          </div>
+        </section>
+        <section class="fleet" aria-labelledby="fleetH">
+          <h2 id="fleetH">Your fleet</h2>
+          <div class="board" id="myBoard">
+            <div class="cols" aria-hidden="true"></div>
+            <div class="rows" aria-hidden="true"></div>
+            <div class="sea" id="mySea" role="img" aria-label="Your fleet"></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- END -->
+    <section id="end" aria-labelledby="endH" hidden>
+      <p class="eyebrow" id="endEyebrow">Mission complete</p>
+      <h2 id="endH" tabindex="-1" style="font-size:clamp(1.8rem,5vw,2.8rem);font-weight:800;display:block"></h2>
+      <p class="lead" id="endLead" style="margin-top:10px"></p>
+      <div class="endgrid">
+        <div><b id="endCorrect">0</b><span>questions correct</span></div>
+        <div><b id="endAsked">0</b><span>questions answered</span></div>
+        <div><b id="endSunk">0</b><span>enemy ships sunk</span></div>
+      </div>
+      <h3 id="reviewH" style="font-family:var(--display);font-size:1.3rem;margin:0 0 12px">Questions to review</h3>
+      <ul class="review" id="review"></ul>
+      <div class="row">
+        <button class="btn" id="againBtn" type="button">Play again</button>
+        <button class="btn ghost" id="menuBtn" type="button" style="padding:14px 26px;font-size:13px">Change question set</button>
+      </div>
+    </section>
+  <div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  <div id="fx" aria-hidden="true"></div>
+</dialog>
+
+<script>
+/* =====================================================================
+   QUESTION BANK
+   Questions are grouped by topic (anatomy, physiology) and then by level
+   (easy, advanced, expert). To change them, edit the lists below.
+   Each question needs:
+     q    the question
+     a    four answer choices. The FIRST choice is the correct one.
+          (Choices are shuffled every time the question is shown.)
+          Each choice is [answer text, why it is right or wrong]
+   ===================================================================== */
+const BANK = {
+anatomy: {
+easy: [
+ {q:"The central nervous system is made of which two structures?",
+  a:[["Brain and spinal cord","The central nervous system is the brain and the spinal cord. Everything else belongs to the peripheral nervous system."],
+     ["Brain and cranial nerves","The brain is correct, but the cranial nerves are part of the peripheral nervous system."],
+     ["Spinal cord and spinal nerves","The spinal cord is correct, but the spinal nerves are part of the peripheral nervous system."],
+     ["Cranial nerves and spinal nerves","Together these nerves make up most of the peripheral nervous system."]]},
+ {q:"What is the largest part of the brain?",
+  a:[["Cerebrum","The cerebrum is the largest part of the brain and is divided into right and left hemispheres."],
+     ["Cerebellum","The cerebellum is the second largest part. It sits below the back of the cerebrum."],
+     ["Brainstem","The brainstem is the stalk that connects the brain to the spinal cord."],
+     ["Diencephalon","The diencephalon is a small region deep in the center of the brain."]]},
+ {q:"Which part of a neuron contains the nucleus?",
+  a:[["Cell body","The cell body, also called the soma, holds the nucleus and most of the organelles."],
+     ["Axon","The axon is the single long process that leaves the cell body."],
+     ["Dendrite","Dendrites are the short, branching processes attached to the cell body."],
+     ["Axon terminal","The axon terminal is the swollen end of an axon."]]},
+ {q:"What is the name of the single long process that extends from a neuron's cell body?",
+  a:[["Axon","A neuron has one axon, and it can be very long."],
+     ["Dendrite","Dendrites are usually short and branched, and a neuron often has many of them."],
+     ["Myelin sheath","The myelin sheath is a covering wrapped around an axon. It is made by glial cells."],
+     ["Synapse","A synapse is the junction between a neuron and another cell."]]},
+ {q:"What is the fatty covering that is wrapped around many axons?",
+  a:[["Myelin sheath","Glial cells wrap layers of their cell membrane around the axon to form the myelin sheath."],
+     ["Meninges","The meninges are the three membranes that cover the brain and spinal cord."],
+     ["Gray matter","Gray matter is nervous tissue that contains neuron cell bodies."],
+     ["Synaptic cleft","The synaptic cleft is the narrow gap between two cells at a synapse."]]},
+ {q:"How many pairs of cranial nerves are there?",
+  a:[["12 pairs","There are 12 pairs of cranial nerves, numbered I through XII."],
+     ["31 pairs","Thirty-one is the number of pairs of spinal nerves."],
+     ["7 pairs","Seven is the number of cervical vertebrae."],
+     ["5 pairs","Five is the number of lumbar vertebrae."]]},
+ {q:"Which lobe is at the front of each cerebral hemisphere?",
+  a:[["Frontal lobe","The frontal lobe is the most anterior lobe. It lies in front of the central sulcus."],
+     ["Occipital lobe","The occipital lobe is at the back of the hemisphere."],
+     ["Temporal lobe","The temporal lobe is on the side of the hemisphere, below the lateral sulcus."],
+     ["Parietal lobe","The parietal lobe is on the top of the hemisphere, behind the frontal lobe."]]},
+ {q:"What are the raised ridges on the surface of the cerebrum called?",
+  a:[["Gyri","A gyrus is a ridge of brain tissue. The plural is gyri."],
+     ["Sulci","Sulci are the shallow grooves between the ridges."],
+     ["Fissures","Fissures are deep grooves, such as the one between the two hemispheres."],
+     ["Ventricles","Ventricles are fluid-filled spaces inside the brain."]]},
+ {q:"What is the order of the meninges from outermost to innermost?",
+  a:[["Dura mater, arachnoid mater, pia mater","The dura mater is the tough outer layer, the arachnoid mater is in the middle, and the pia mater lies on the brain."],
+     ["Pia mater, arachnoid mater, dura mater","This is the correct order from innermost to outermost, which is the reverse of what the question asks."],
+     ["Arachnoid mater, dura mater, pia mater","The arachnoid mater is the middle layer, so it cannot be first."],
+     ["Dura mater, pia mater, arachnoid mater","The pia mater is the innermost layer because it lies directly on the brain."]]},
+ {q:"What are the fluid-filled spaces inside the brain called?",
+  a:[["Ventricles","The brain has four ventricles, and they are filled with cerebrospinal fluid."],
+     ["Dural venous sinuses","These channels in the dura mater carry venous blood."],
+     ["Sulci","Sulci are grooves on the outer surface of the brain."],
+     ["Nuclei","In the central nervous system, a nucleus is a cluster of neuron cell bodies."]]},
+ {q:"Gray matter is made mostly of which structures?",
+  a:[["Neuron cell bodies","Gray matter contains neuron cell bodies and dendrites. It looks gray because it has very little myelin."],
+     ["Myelinated axons","Myelinated axons make up white matter."],
+     ["Cerebrospinal fluid","Cerebrospinal fluid fills the ventricles and surrounds the brain. It is not a tissue."],
+     ["Dense connective tissue","Dense connective tissue forms the dura mater."]]},
+ {q:"Which brain region connects directly to the spinal cord?",
+  a:[["Brainstem","The lowest part of the brainstem, the medulla oblongata, continues into the spinal cord."],
+     ["Cerebellum","The cerebellum sits behind the brainstem and attaches to it."],
+     ["Thalamus","The thalamus is deep in the center of the brain, above the brainstem."],
+     ["Corpus callosum","The corpus callosum connects the right and left cerebral hemispheres."]]},
+ {q:"The spinal cord passes through which opening in the skull?",
+  a:[["Foramen magnum","The foramen magnum is the large opening in the occipital bone at the base of the skull."],
+     ["Optic canal","The optic canal carries the optic nerve to the eye."],
+     ["Jugular foramen","The jugular foramen carries the internal jugular vein and three cranial nerves."],
+     ["Vertebral foramen","A vertebral foramen is the opening in a vertebra. It is not part of the skull."]]},
+ {q:"The spinal cord is protected inside which space?",
+  a:[["Vertebral canal","The stacked openings of the vertebrae form the vertebral canal, which surrounds the spinal cord."],
+     ["Cranial cavity","The cranial cavity holds the brain."],
+     ["Thoracic cavity","The thoracic cavity holds the heart and lungs."],
+     ["Intervertebral foramen","An intervertebral foramen is the opening between two vertebrae where a spinal nerve exits."]]},
+ {q:"What is a bundle of axons in the peripheral nervous system called?",
+  a:[["Nerve","A nerve is a bundle of axons, wrapped in connective tissue, in the peripheral nervous system."],
+     ["Tract","A tract is a bundle of axons in the central nervous system."],
+     ["Ganglion","A ganglion is a cluster of neuron cell bodies in the peripheral nervous system."],
+     ["Nucleus","A nucleus is a cluster of neuron cell bodies in the central nervous system."]]},
+ {q:"What is a cluster of neuron cell bodies in the peripheral nervous system called?",
+  a:[["Ganglion","A ganglion is a group of neuron cell bodies located outside the brain and spinal cord."],
+     ["Nucleus","A nucleus is a cluster of neuron cell bodies inside the central nervous system."],
+     ["Tract","A tract is a bundle of axons in the central nervous system."],
+     ["Nerve","A nerve is a bundle of axons in the peripheral nervous system."]]}
+],
+advanced: [
+ {q:"Which structure connects the right and left cerebral hemispheres?",
+  a:[["Corpus callosum","This wide band of white matter is made of axons that run between the two hemispheres."],
+     ["Falx cerebri","This fold of dura mater sits in the longitudinal fissure. It separates the hemispheres and does not connect them."],
+     ["Cerebral aqueduct","This narrow canal runs through the midbrain and connects the third and fourth ventricles."],
+     ["Central sulcus","This is a groove on each hemisphere between the frontal and parietal lobes."]]},
+ {q:"Which sulcus separates the frontal lobe from the parietal lobe?",
+  a:[["Central sulcus","The central sulcus runs down the side of each hemisphere with the frontal lobe in front of it and the parietal lobe behind it."],
+     ["Lateral sulcus","The lateral sulcus separates the temporal lobe from the frontal and parietal lobes above it."],
+     ["Parieto-occipital sulcus","This sulcus separates the parietal lobe from the occipital lobe."],
+     ["Longitudinal fissure","This deep groove separates the right and left cerebral hemispheres."]]},
+ {q:"Which meningeal layer lies directly on the brain and follows every gyrus and sulcus?",
+  a:[["Pia mater","The pia mater is the thin innermost layer. It clings to the brain surface and dips into every sulcus."],
+     ["Arachnoid mater","The arachnoid mater is the middle layer. It bridges over the sulci and does not dip into them."],
+     ["Dura mater","The dura mater is the tough outermost layer, next to the skull."],
+     ["Falx cerebri","The falx cerebri is a fold of the dura mater, so it is not a separate layer."]]},
+ {q:"Cerebrospinal fluid surrounds the brain and spinal cord in which space?",
+  a:[["Subarachnoid space","This space lies between the arachnoid mater and the pia mater, and it is filled with cerebrospinal fluid."],
+     ["Subdural space","This is a very thin potential space between the dura mater and arachnoid mater. It does not normally hold cerebrospinal fluid."],
+     ["Epidural space","In the vertebral canal this space lies outside the dura mater and holds fat and veins."],
+     ["Dural venous sinus","A dural venous sinus is a channel inside the dura mater that carries venous blood."]]},
+ {q:"From superior to inferior, what is the order of the brainstem regions?",
+  a:[["Midbrain, pons, medulla oblongata","The midbrain is on top, the pons is in the middle, and the medulla oblongata is at the bottom where it meets the spinal cord."],
+     ["Pons, midbrain, medulla oblongata","The pons is the middle region, so it cannot be first."],
+     ["Medulla oblongata, pons, midbrain","This is the correct order from inferior to superior, which is the reverse of what the question asks."],
+     ["Midbrain, medulla oblongata, pons","The medulla oblongata is the most inferior region because it continues into the spinal cord."]]},
+ {q:"The cerebral aqueduct connects which two ventricles?",
+  a:[["Third and fourth ventricles","The cerebral aqueduct passes through the midbrain and links the third ventricle to the fourth ventricle."],
+     ["Lateral and third ventricles","Each lateral ventricle opens into the third ventricle through an interventricular foramen."],
+     ["Right and left lateral ventricles","The two lateral ventricles are separated by the septum pellucidum and do not open into each other."],
+     ["Fourth ventricle and central canal","The fourth ventricle continues straight into the central canal of the spinal cord without an aqueduct."]]},
+ {q:"Which of these structures is part of the diencephalon?",
+  a:[["Thalamus","The diencephalon is made of the thalamus, hypothalamus and epithalamus."],
+     ["Pons","The pons is part of the brainstem."],
+     ["Cerebellum","The cerebellum is its own brain region, posterior to the brainstem."],
+     ["Corpus callosum","The corpus callosum is white matter of the cerebrum."]]},
+ {q:"Which fold of dura mater separates the cerebrum from the cerebellum?",
+  a:[["Tentorium cerebelli","This horizontal fold of dura mater lies between the occipital lobes above and the cerebellum below."],
+     ["Falx cerebri","The falx cerebri lies between the right and left cerebral hemispheres."],
+     ["Falx cerebelli","The falx cerebelli lies between the right and left cerebellar hemispheres."],
+     ["Diaphragma sellae","This small fold covers the pituitary gland in the sella turcica."]]},
+ {q:"Which cranial nerve is number X (ten)?",
+  a:[["Vagus nerve","The vagus nerve is cranial nerve X."],
+     ["Facial nerve","The facial nerve is cranial nerve VII."],
+     ["Glossopharyngeal nerve","The glossopharyngeal nerve is cranial nerve IX."],
+     ["Hypoglossal nerve","The hypoglossal nerve is cranial nerve XII."]]},
+ {q:"In an adult, the spinal cord usually ends near which vertebral level?",
+  a:[["L1 to L2","The tapered end of the cord, called the conus medullaris, usually sits near the L1 to L2 vertebrae."],
+     ["T6 to T7","The spinal cord is still present at this level and continues below it."],
+     ["L4 to L5","This level is below the end of the cord. Only the nerve roots of the cauda equina are found here."],
+     ["S2","The dural sac ends near S2, but the spinal cord itself ends much higher."]]},
+ {q:"How many pairs of spinal nerves are there?",
+  a:[["31 pairs","There are 8 cervical, 12 thoracic, 5 lumbar, 5 sacral and 1 coccygeal pair, which adds up to 31."],
+     ["12 pairs","Twelve is the number of pairs of cranial nerves."],
+     ["33 pairs","Thirty-three is the usual count of vertebrae before the sacral and coccygeal vertebrae fuse."],
+     ["26 pairs","Twenty-six is the number of bones in the adult vertebral column."]]},
+ {q:"Where are the cell bodies of the sensory neurons that enter the spinal cord?",
+  a:[["Posterior (dorsal) root ganglion","Sensory neuron cell bodies are grouped in this swelling on the posterior root, just outside the spinal cord."],
+     ["Anterior horn","The anterior horn holds the cell bodies of somatic motor neurons."],
+     ["Posterior horn","The posterior horn holds interneurons. Sensory axons end here, but their cell bodies sit outside the cord."],
+     ["Lateral horn","The lateral horn holds autonomic motor neuron cell bodies and is found in spinal segments T1 to L2."]]},
+ {q:"What is the name of the bundle of nerve roots that extends below the end of the spinal cord?",
+  a:[["Cauda equina","These long nerve roots hang below the end of the cord inside the vertebral canal."],
+     ["Conus medullaris","The conus medullaris is the tapered end of the spinal cord itself."],
+     ["Filum terminale","The filum terminale is a thin strand of pia mater that anchors the cord to the coccyx."],
+     ["Brachial plexus","The brachial plexus is a network of nerves from C5 to T1 that supplies the upper limb."]]},
+ {q:"Which glial cell forms myelin in the central nervous system?",
+  a:[["Oligodendrocyte","One oligodendrocyte wraps its processes around segments of several axons in the brain and spinal cord."],
+     ["Schwann cell","Schwann cells form myelin in the peripheral nervous system."],
+     ["Astrocyte","Astrocytes are star-shaped cells of the central nervous system whose processes wrap around capillaries and neurons. They do not form myelin."],
+     ["Ependymal cell","Ependymal cells line the ventricles of the brain and the central canal of the spinal cord."]]},
+ {q:"A neuron with one axon and one dendrite attached to its cell body is classified as which type?",
+  a:[["Bipolar","A bipolar neuron has two processes, one axon and one dendrite. They are found in places such as the retina."],
+     ["Multipolar","A multipolar neuron has one axon and many dendrites. It is the most common type."],
+     ["Unipolar","A unipolar neuron has a single short process that leaves the cell body and then splits in two."],
+     ["Anaxonic","An anaxonic neuron has many processes but no clearly identifiable axon."]]},
+ {q:"The brachial plexus is formed by the anterior rami of which spinal nerves?",
+  a:[["C5 to T1","The anterior rami of C5, C6, C7, C8 and T1 join to form the brachial plexus."],
+     ["C1 to C4","These anterior rami mainly form the cervical plexus."],
+     ["L1 to L4","These anterior rami form the lumbar plexus."],
+     ["L4 to S4","These anterior rami form the sacral plexus."]]}
+],
+expert: [
+ {q:"Which artery supplies most of the lateral surface of the cerebral hemisphere?",
+  a:[["Middle cerebral artery","The middle cerebral artery runs in the lateral sulcus and its branches spread over most of the lateral surface."],
+     ["Anterior cerebral artery","The anterior cerebral artery supplies the medial surface of the frontal and parietal lobes."],
+     ["Posterior cerebral artery","The posterior cerebral artery supplies the occipital lobe and the inferior surface of the temporal lobe."],
+     ["Basilar artery","The basilar artery runs along the pons and supplies the brainstem and cerebellum."]]},
+ {q:"Which cranial nerve exits from the dorsal (posterior) surface of the brainstem?",
+  a:[["Trochlear nerve (IV)","The trochlear nerve is the only cranial nerve that emerges from the dorsal surface, just below the inferior colliculus."],
+     ["Oculomotor nerve (III)","The oculomotor nerve emerges from the ventral midbrain in the interpeduncular fossa."],
+     ["Abducens nerve (VI)","The abducens nerve emerges ventrally at the junction of the pons and medulla."],
+     ["Trigeminal nerve (V)","The trigeminal nerve emerges from the lateral surface of the pons."]]},
+ {q:"The posterior limb of the internal capsule lies between which two structures?",
+  a:[["Thalamus and lentiform nucleus","The posterior limb runs between the thalamus medially and the lentiform nucleus laterally."],
+     ["Head of the caudate nucleus and lentiform nucleus","These two structures border the anterior limb of the internal capsule."],
+     ["Putamen and claustrum","The external capsule lies between the putamen and the claustrum."],
+     ["Claustrum and insula","The extreme capsule lies between the claustrum and the insular cortex."]]},
+ {q:"Which two structures make up the lentiform nucleus?",
+  a:[["Putamen and globus pallidus","The putamen lies laterally and the globus pallidus medially, and together they form the lens-shaped lentiform nucleus."],
+     ["Caudate nucleus and putamen","The caudate nucleus and putamen together are called the striatum."],
+     ["Caudate nucleus and thalamus","These are neighbors along the lateral ventricle, but they are not grouped as one nucleus."],
+     ["Thalamus and hypothalamus","The thalamus and hypothalamus are parts of the diencephalon."]]},
+ {q:"The mandibular division of the trigeminal nerve (V3) leaves the skull through which opening?",
+  a:[["Foramen ovale","V3 passes through the foramen ovale in the sphenoid bone."],
+     ["Foramen rotundum","The maxillary division (V2) passes through the foramen rotundum."],
+     ["Superior orbital fissure","The ophthalmic division (V1) passes through the superior orbital fissure with cranial nerves III, IV and VI."],
+     ["Foramen spinosum","The foramen spinosum carries the middle meningeal artery."]]},
+ {q:"Which cranial nerves pass through the jugular foramen?",
+  a:[["IX, X and XI","The glossopharyngeal, vagus and accessory nerves leave the skull through the jugular foramen."],
+     ["VII and VIII","The facial and vestibulocochlear nerves enter the internal acoustic meatus."],
+     ["III, IV and VI","These three nerves pass through the superior orbital fissure."],
+     ["XII only","The hypoglossal nerve passes through the hypoglossal canal."]]},
+ {q:"Where do the axons of the dorsal column-medial lemniscus pathway cross the midline?",
+  a:[["In the medulla, as the internal arcuate fibers","Axons from the gracile and cuneate nuclei cross in the medulla and then ascend as the medial lemniscus."],
+     ["In the spinal cord, through the anterior white commissure","Axons of the spinothalamic tract cross here."],
+     ["In the pons, as the transverse pontine fibers","These crossing fibers run from the pontine nuclei into the middle cerebellar peduncle."],
+     ["In the midbrain, at the decussation of the superior cerebellar peduncles","Fibers leaving the cerebellum cross here."]]},
+ {q:"Which cerebellar peduncle carries most of the fibers that leave the cerebellum?",
+  a:[["Superior cerebellar peduncle","Most cerebellar output, from the deep cerebellar nuclei, leaves through the superior peduncle."],
+     ["Middle cerebellar peduncle","The middle peduncle carries only incoming fibers, from the pontine nuclei."],
+     ["Inferior cerebellar peduncle","The inferior peduncle carries mostly incoming fibers from the spinal cord and medulla."],
+     ["Cerebral peduncle","The cerebral peduncle is part of the midbrain and carries descending fibers from the cerebral cortex."]]},
+ {q:"What is the order of the deep cerebellar nuclei from lateral to medial?",
+  a:[["Dentate, emboliform, globose, fastigial","The dentate nucleus is the largest and most lateral, and the fastigial nucleus is closest to the midline."],
+     ["Fastigial, globose, emboliform, dentate","This is the correct order from medial to lateral, which is the reverse of what the question asks."],
+     ["Dentate, globose, emboliform, fastigial","The emboliform nucleus lies lateral to the globose nucleus, so these two are switched."],
+     ["Emboliform, dentate, fastigial, globose","The dentate nucleus is the most lateral and the fastigial nucleus is the most medial."]]},
+ {q:"Cerebrospinal fluid leaves the fourth ventricle and enters the subarachnoid space through which openings?",
+  a:[["The median aperture and the two lateral apertures","These three openings in the fourth ventricle let cerebrospinal fluid flow into the subarachnoid space."],
+     ["The interventricular foramina","Each interventricular foramen connects a lateral ventricle to the third ventricle."],
+     ["The cerebral aqueduct","The cerebral aqueduct carries fluid from the third ventricle into the fourth ventricle."],
+     ["The arachnoid granulations","The arachnoid granulations return fluid from the subarachnoid space to the dural venous sinuses."]]},
+ {q:"Where are the cell bodies of the preganglionic parasympathetic neurons that travel in the oculomotor nerve?",
+  a:[["Edinger-Westphal nucleus","This nucleus in the midbrain sends preganglionic fibers through the oculomotor nerve to the ciliary ganglion."],
+     ["Ciliary ganglion","The ciliary ganglion holds the postganglionic cell bodies of this pathway."],
+     ["Superior cervical ganglion","This ganglion holds sympathetic postganglionic cell bodies that supply the head."],
+     ["Superior salivatory nucleus","This nucleus sends preganglionic parasympathetic fibers through the facial nerve."]]},
+ {q:"The anterior spinal artery supplies about how much of the spinal cord in cross-section?",
+  a:[["The anterior two-thirds","The anterior spinal artery supplies the anterior two-thirds, including the anterior horns and the lateral corticospinal tracts."],
+     ["The posterior one-third","The paired posterior spinal arteries supply the posterior one-third, including the posterior columns."],
+     ["The entire cross-section","The cord is shared between one anterior spinal artery and two posterior spinal arteries."],
+     ["Only the anterior horns","The territory is larger than this and also includes much of the lateral and anterior white matter."]]},
+ {q:"Which thalamic nucleus receives the medial lemniscus and the spinothalamic tract from the body?",
+  a:[["Ventral posterolateral nucleus (VPL)","Somatosensory pathways from the body end in the VPL."],
+     ["Ventral posteromedial nucleus (VPM)","The VPM receives somatosensory input from the face through the trigeminal pathways."],
+     ["Lateral geniculate nucleus","The lateral geniculate nucleus receives the optic tract."],
+     ["Medial geniculate nucleus","The medial geniculate nucleus receives auditory input from the inferior colliculus."]]},
+ {q:"Which secondary brain vesicle develops into the pons and cerebellum?",
+  a:[["Metencephalon","The metencephalon forms the pons and the cerebellum."],
+     ["Myelencephalon","The myelencephalon forms the medulla oblongata."],
+     ["Mesencephalon","The mesencephalon forms the midbrain."],
+     ["Telencephalon","The telencephalon forms the cerebral hemispheres."]]},
+ {q:"In an adult, a lumbar puncture needle is usually inserted at which level?",
+  a:[["Between L3 and L4, or L4 and L5","These levels are below the end of the spinal cord, so the needle enters the lumbar cistern among the roots of the cauda equina."],
+     ["Between T12 and L1","The spinal cord is still present at this level."],
+     ["Between L1 and L2","The conus medullaris usually lies near this level in adults."],
+     ["Between S2 and S3","The sacral vertebrae are fused, and the dural sac ends near S2."]]},
+ {q:"The anterior communicating artery connects which two vessels?",
+  a:[["The right and left anterior cerebral arteries","This short artery joins the two anterior cerebral arteries at the front of the cerebral arterial circle."],
+     ["The internal carotid artery and the posterior cerebral artery","The posterior communicating artery connects these two vessels."],
+     ["The right and left posterior cerebral arteries","These two arteries arise together where the basilar artery divides."],
+     ["The middle cerebral artery and the anterior cerebral artery","Both of these arise from the internal carotid artery."]]}
+]},
+physiology: {
+easy: [
+ {q:"Which cell of the nervous system is specialized to send electrical signals?",
+  a:[["Neuron","Neurons generate and conduct electrical signals."],
+     ["Glial cell","Glial cells support and protect neurons."],
+     ["Nephron","A nephron is the working unit of the kidney."],
+     ["Muscle fiber","A muscle fiber is a muscle cell. It receives signals from neurons."]]},
+ {q:"What is the electrical signal that travels along an axon called?",
+  a:[["Action potential","An action potential is a brief electrical signal that travels the length of the axon."],
+     ["Neurotransmitter","A neurotransmitter is a chemical, not an electrical signal."],
+     ["Hormone","A hormone is a chemical signal that travels in the blood."],
+     ["Reflex","A reflex is an automatic response that involves several neurons."]]},
+ {q:"What is the chemical that a neuron releases at a synapse to signal the next cell?",
+  a:[["Neurotransmitter","Neurotransmitters are released from the axon terminal and bind to receptors on the next cell."],
+     ["Hormone","Hormones are released into the blood by endocrine cells."],
+     ["Enzyme","An enzyme is a protein that speeds up a chemical reaction."],
+     ["Myelin","Myelin is the fatty covering around an axon."]]},
+ {q:"In which direction do sensory (afferent) neurons carry signals?",
+  a:[["Toward the central nervous system","Sensory neurons carry information from receptors to the brain and spinal cord."],
+     ["Away from the central nervous system","Motor (efferent) neurons carry signals away from the central nervous system."],
+     ["Only within the central nervous system","Interneurons stay within the central nervous system."],
+     ["From one muscle to another","Muscles do not send signals to each other through neurons this way."]]},
+ {q:"Which neurons lie entirely within the central nervous system and connect other neurons?",
+  a:[["Interneurons","Interneurons connect sensory and motor neurons and process information."],
+     ["Sensory neurons","Sensory neurons begin at receptors outside the central nervous system."],
+     ["Motor neurons","Motor neurons send their axons out to muscles and glands."],
+     ["Schwann cells","Schwann cells are glial cells in the peripheral nervous system."]]},
+ {q:"Which of these is more concentrated outside a neuron than inside it?",
+  a:[["Sodium (Na⁺)","Sodium is much more concentrated in the fluid outside the cell."],
+     ["Potassium (K⁺)","Potassium is more concentrated inside the cell."],
+     ["Negatively charged proteins","These large proteins are trapped inside the cell."],
+     ["ATP","ATP is made and used inside the cell."]]},
+ {q:"At rest, how does the inside of a neuron compare with the outside?",
+  a:[["The inside is more negative","The resting membrane potential is negative, about −70 mV."],
+     ["The inside is more positive","The inside becomes positive only briefly, at the peak of an action potential."],
+     ["The inside and outside have the same charge","There is a charge difference across the membrane at rest."],
+     ["The charge keeps switching back and forth","The resting potential is steady until the neuron is stimulated."]]},
+ {q:"What does myelin do for an axon?",
+  a:[["It speeds up the signal","Myelin insulates the axon so the action potential travels much faster."],
+     ["It makes neurotransmitter","Neurotransmitter is made by the neuron itself."],
+     ["It receives signals from other neurons","Dendrites and the cell body receive signals."],
+     ["It makes cerebrospinal fluid","Cerebrospinal fluid is made by the choroid plexus in the ventricles."]]},
+ {q:"What is the junction where a neuron communicates with another cell called?",
+  a:[["Synapse","At a synapse, a neuron passes its signal to another neuron, a muscle cell or a gland cell."],
+     ["Node of Ranvier","A node of Ranvier is a gap in the myelin sheath."],
+     ["Ganglion","A ganglion is a cluster of neuron cell bodies in the peripheral nervous system."],
+     ["Axon hillock","The axon hillock is where the axon leaves the cell body."]]},
+ {q:"What happens to the membrane potential during depolarization?",
+  a:[["It becomes less negative","During depolarization the inside of the cell moves toward a positive value."],
+     ["It becomes more negative than the resting value","This describes hyperpolarization."],
+     ["It returns to the resting value","This describes repolarization."],
+     ["It does not change","A membrane potential that does not change is a resting potential."]]},
+ {q:"Which division of the nervous system produces the fight-or-flight response?",
+  a:[["Sympathetic division","The sympathetic division prepares the body for activity and stress."],
+     ["Parasympathetic division","The parasympathetic division is most active during rest and digestion."],
+     ["Somatic nervous system","The somatic nervous system controls skeletal muscle."],
+     ["Enteric nervous system","The enteric nervous system is a network of neurons in the wall of the digestive tract."]]},
+ {q:"What is a fast, automatic response to a stimulus called?",
+  a:[["Reflex","A reflex is a rapid, involuntary and predictable response to a stimulus."],
+     ["Action potential","An action potential is the electrical signal in one neuron."],
+     ["Synapse","A synapse is the junction between a neuron and another cell."],
+     ["Resting potential","The resting potential is the voltage across the membrane of an unstimulated cell."]]},
+ {q:"Where on a neuron does an action potential usually begin?",
+  a:[["Axon hillock","The first part of the axon has many voltage-gated sodium channels, so action potentials begin there."],
+     ["Tips of the dendrites","Dendrites produce graded potentials."],
+     ["Axon terminal","The action potential ends at the axon terminal."],
+     ["Myelin sheath","Myelin is insulation and does not produce action potentials."]]},
+ {q:"What does the sodium-potassium pump use for energy?",
+  a:[["ATP","The pump splits ATP to move sodium and potassium against their concentration gradients."],
+     ["Glucose","Cells use glucose to make ATP, but the pump itself uses ATP."],
+     ["Nothing, because the ions simply diffuse","Diffusion through channels needs no energy, but the pump moves ions against their gradients."],
+     ["Neurotransmitter","Neurotransmitters carry signals between cells. They are not an energy source."]]},
+ {q:"What does \"all-or-none\" mean for an action potential?",
+  a:[["It happens completely or not at all","Once threshold is reached, a full action potential fires. Below threshold, none fires."],
+     ["A bigger stimulus makes a bigger action potential","Action potentials in a neuron are all about the same size."],
+     ["The action potential gets smaller as it travels","An action potential keeps its size along the whole axon."],
+     ["Every stimulus produces an action potential","Only a stimulus that reaches threshold produces an action potential."]]},
+ {q:"Where are the receptors that neurotransmitters bind to?",
+  a:[["On the membrane of the receiving cell","Neurotransmitter crosses the synaptic cleft and binds to receptors on the postsynaptic membrane."],
+     ["Inside the synaptic vesicles","Synaptic vesicles store neurotransmitter in the axon terminal before release."],
+     ["On the myelin sheath","Myelin insulates the axon and has no role at the synapse."],
+     ["Inside the nucleus","Neurotransmitter receptors are on the cell surface."]]}
+],
+advanced: [
+ {q:"What is the typical resting membrane potential of a neuron?",
+  a:[["About −70 mV","At rest the inside of the neuron is about 70 millivolts more negative than the outside."],
+     ["About −55 mV","This value is the typical threshold, the voltage that must be reached to start an action potential."],
+     ["0 mV","The membrane passes through 0 mV during depolarization, but it does not rest there."],
+     ["About +30 mV","This value is close to the peak of an action potential."]]},
+ {q:"What causes the rising (depolarizing) phase of an action potential?",
+  a:[["Sodium (Na⁺) enters through voltage-gated channels","When threshold is reached, voltage-gated sodium channels open and positive sodium ions rush in."],
+     ["Potassium (K⁺) leaves through voltage-gated channels","Potassium leaving the cell causes repolarization, which is the falling phase."],
+     ["Chloride (Cl⁻) enters the cell","Chloride entering makes the inside more negative, which moves the membrane away from threshold."],
+     ["Calcium (Ca²⁺) enters the axon terminal","Calcium entry at the axon terminal triggers neurotransmitter release. It does not produce the rising phase along the axon."]]},
+ {q:"What causes the repolarizing (falling) phase of an action potential?",
+  a:[["Potassium (K⁺) leaves through voltage-gated channels","Sodium channels inactivate and voltage-gated potassium channels open, so positive charge leaves the cell."],
+     ["Sodium (Na⁺) enters through voltage-gated channels","Sodium entering the cell causes depolarization, which is the rising phase."],
+     ["The sodium-potassium pump moves ions","The pump maintains the ion gradients over time, but it works far too slowly to repolarize the membrane during one action potential."],
+     ["Calcium (Ca²⁺) enters the cell","Positive calcium ions entering the cell would depolarize the membrane."]]},
+ {q:"What does the sodium-potassium pump move in each cycle?",
+  a:[["3 Na⁺ out and 2 K⁺ in","Each cycle uses one ATP to move three sodium ions out of the cell and two potassium ions in."],
+     ["2 Na⁺ out and 3 K⁺ in","The directions are right, but the numbers are reversed."],
+     ["3 Na⁺ in and 2 K⁺ out","The numbers are right, but both directions are reversed."],
+     ["3 Na⁺ out and 3 K⁺ in","The exchange is unequal. Three sodium ions leave for every two potassium ions that enter."]]},
+ {q:"Why can a second action potential not start during the absolute refractory period?",
+  a:[["Voltage-gated Na⁺ channels are already open or inactivated","These channels must reset to their closed state before they can open again, no matter how strong the stimulus is."],
+     ["The neuron has run out of Na⁺","Only a very small number of ions cross the membrane in one action potential, so the concentrations barely change."],
+     ["The sodium-potassium pump has stopped","The pump keeps working throughout the action potential."],
+     ["All of the K⁺ channels are closed","Voltage-gated potassium channels are open during much of this period."]]},
+ {q:"What is saltatory conduction?",
+  a:[["An action potential jumping from node to node along a myelinated axon","Action potentials are produced only at the gaps in the myelin, so the signal appears to jump from one node to the next."],
+     ["An action potential traveling along every part of an unmyelinated axon","This describes continuous conduction."],
+     ["Neurotransmitter crossing the synaptic cleft","This describes transmission at a chemical synapse."],
+     ["A graded potential fading as it spreads","This describes how graded potentials lose strength with distance."]]},
+ {q:"Which pair of features gives an axon the fastest conduction speed?",
+  a:[["Large diameter and myelin","A wide axon has less resistance to current flow, and myelin allows saltatory conduction."],
+     ["Small diameter and no myelin","This combination gives the slowest conduction."],
+     ["Small diameter and myelin","Myelin helps, but a small diameter slows conduction compared with a large myelinated axon."],
+     ["Large diameter and no myelin","A large diameter helps, but the axon would be faster still with myelin."]]},
+ {q:"How does a neuron signal that a stimulus is stronger?",
+  a:[["It fires action potentials more often","Stimulus strength is coded by the frequency of action potentials."],
+     ["It fires larger action potentials","Action potentials are all-or-none, so each one in a given neuron is about the same size."],
+     ["Its action potentials travel faster","Conduction speed depends on axon diameter and myelin, not on stimulus strength."],
+     ["Each action potential lasts longer","The duration of each action potential stays about the same."]]},
+ {q:"What directly triggers the release of neurotransmitter from the axon terminal?",
+  a:[["Calcium (Ca²⁺) entering the axon terminal","The action potential opens voltage-gated calcium channels, and the calcium that enters causes synaptic vesicles to release their contents."],
+     ["Sodium (Na⁺) entering the postsynaptic cell","This can happen after the neurotransmitter binds to its receptors, so it comes later."],
+     ["Potassium (K⁺) leaving the axon terminal","Potassium leaving repolarizes the terminal. It does not trigger release."],
+     ["Neurotransmitter binding to its receptor","Binding happens on the postsynaptic cell after the neurotransmitter has been released."]]},
+ {q:"What is an excitatory postsynaptic potential (EPSP)?",
+  a:[["A small depolarization that brings the membrane closer to threshold","An EPSP is a graded potential that makes the postsynaptic neuron more likely to fire."],
+     ["A small hyperpolarization that moves the membrane away from threshold","This describes an inhibitory postsynaptic potential (IPSP)."],
+     ["An all-or-none signal that travels down the axon","This describes an action potential."],
+     ["The steady voltage across the membrane of a resting neuron","This describes the resting membrane potential."]]},
+ {q:"One presynaptic neuron fires several times in a row, and the EPSPs add together. What is this called?",
+  a:[["Temporal summation","Temporal summation happens when signals from the same synapse arrive close together in time and add up."],
+     ["Spatial summation","Spatial summation happens when signals from several different synapses arrive at the same time."],
+     ["Saltatory conduction","Saltatory conduction is how an action potential travels along a myelinated axon."],
+     ["Absolute refractory period","This is the time during an action potential when a second one cannot start."]]},
+ {q:"Which neurotransmitter is released at the neuromuscular junction of skeletal muscle?",
+  a:[["Acetylcholine","Somatic motor neurons release acetylcholine, which binds to nicotinic receptors on the muscle fiber."],
+     ["Norepinephrine","Norepinephrine is released by most sympathetic postganglionic neurons."],
+     ["GABA","GABA is the main inhibitory neurotransmitter in the brain."],
+     ["Dopamine","Dopamine is a neurotransmitter used in the brain. It is not released onto skeletal muscle."]]},
+ {q:"How is acetylcholine removed from the synaptic cleft?",
+  a:[["The enzyme acetylcholinesterase breaks it down","Acetylcholinesterase splits acetylcholine into acetate and choline, and the choline is taken back into the axon terminal."],
+     ["The whole molecule is taken back into the axon terminal","Reuptake of the whole molecule is typical of neurotransmitters such as norepinephrine and serotonin."],
+     ["The enzyme monoamine oxidase breaks it down","Monoamine oxidase breaks down monoamines such as norepinephrine."],
+     ["It stays on the receptor until the next action potential","Acetylcholine is cleared within milliseconds so the muscle fiber or neuron can respond to the next signal."]]},
+ {q:"How does GABA usually inhibit a neuron in the brain?",
+  a:[["It opens chloride (Cl⁻) channels","Chloride entering the cell makes the inside more negative, which moves the membrane away from threshold."],
+     ["It opens sodium (Na⁺) channels","Sodium entering the cell would depolarize the membrane, which is excitatory."],
+     ["It closes potassium (K⁺) leak channels","Closing these channels would keep positive charge inside the cell and depolarize the membrane."],
+     ["It opens calcium (Ca²⁺) channels","Calcium entering the cell would depolarize the membrane."]]},
+ {q:"What is the correct order of the parts of a reflex arc?",
+  a:[["Receptor, sensory neuron, integration center, motor neuron, effector","The receptor detects the stimulus, the sensory neuron carries the signal in, the integration center processes it, the motor neuron carries the command out, and the effector responds."],
+     ["Receptor, motor neuron, integration center, sensory neuron, effector","The sensory neuron carries the signal toward the integration center, so it comes before the motor neuron."],
+     ["Effector, sensory neuron, integration center, motor neuron, receptor","The receptor starts the reflex and the effector carries out the response, so these two are reversed."],
+     ["Receptor, integration center, sensory neuron, motor neuron, effector","The sensory neuron has to carry the signal to the integration center before it can be processed."]]},
+ {q:"Which statement is true of graded potentials?",
+  a:[["Their size depends on the strength of the stimulus","A stronger stimulus produces a larger graded potential, and the signal fades as it spreads."],
+     ["They are all-or-none","All-or-none describes action potentials."],
+     ["They occur only on axons","Graded potentials occur mainly on dendrites and the cell body."],
+     ["They always depolarize the membrane","Graded potentials can be depolarizing or hyperpolarizing."]]}
+],
+expert: [
+ {q:"Which equation gives the equilibrium potential for a single ion?",
+  a:[["Nernst equation","The Nernst equation calculates the membrane voltage that exactly balances the concentration gradient of one ion."],
+     ["Goldman-Hodgkin-Katz equation","This equation predicts the membrane potential from several ions and their relative permeabilities."],
+     ["Ohm's law","Ohm's law relates current, voltage and resistance."],
+     ["Henderson-Hasselbalch equation","This equation relates pH to the ratio of a base and its acid."]]},
+ {q:"What is the approximate equilibrium potential for potassium in a typical neuron?",
+  a:[["About −90 mV","Potassium is concentrated inside the cell, so its equilibrium potential is strongly negative."],
+     ["About +60 mV","This value is close to the equilibrium potential for sodium."],
+     ["About −70 mV","This is the resting membrane potential, which sits close to the potassium equilibrium potential without reaching it."],
+     ["0 mV","This is close to the reversal potential of nonselective cation channels, such as the nicotinic receptor."]]},
+ {q:"Tetrodotoxin blocks which target?",
+  a:[["Voltage-gated sodium channels","Tetrodotoxin blocks the pore of voltage-gated sodium channels, which prevents action potentials."],
+     ["Voltage-gated potassium channels","Tetraethylammonium is the classic blocker of these channels."],
+     ["The sodium-potassium pump","Ouabain and digoxin inhibit the pump."],
+     ["Nicotinic acetylcholine receptors","Curare blocks nicotinic receptors at the neuromuscular junction."]]},
+ {q:"What is required for current to flow through an NMDA receptor?",
+  a:[["Glutamate binding plus depolarization that removes the magnesium block","At resting potential, magnesium blocks the pore. The membrane must be depolarized while glutamate is bound."],
+     ["Glutamate binding alone","This is enough to open AMPA receptors."],
+     ["GABA binding","GABA binds to its own receptors, which are inhibitory."],
+     ["Activation of a G protein","Metabotropic glutamate receptors work through G proteins. The NMDA receptor is an ion channel."]]},
+ {q:"How does botulinum toxin cause flaccid paralysis?",
+  a:[["It cleaves SNARE proteins, which blocks acetylcholine release","Without working SNARE proteins, synaptic vesicles cannot fuse with the membrane of the motor neuron terminal."],
+     ["It blocks nicotinic receptors on the muscle","This describes curare and related drugs."],
+     ["It inhibits acetylcholinesterase","Inhibiting this enzyme raises acetylcholine levels in the cleft, as organophosphates do."],
+     ["It blocks transmitter release from inhibitory interneurons in the spinal cord","This describes tetanus toxin, which causes spastic paralysis."]]},
+ {q:"Which change increases the length constant of an axon?",
+  a:[["Higher membrane resistance and lower axial resistance","The length constant grows when less current leaks out through the membrane and current flows more easily along the axon."],
+     ["Lower membrane resistance and higher axial resistance","Both of these changes shorten the length constant."],
+     ["Lower membrane resistance and lower axial resistance","A leakier membrane shortens the length constant."],
+     ["Higher membrane resistance and higher axial resistance","Higher axial resistance makes it harder for current to spread along the axon."]]},
+ {q:"How does myelin increase conduction velocity?",
+  a:[["It raises membrane resistance and lowers membrane capacitance","Less current leaks out and less charge is needed to change the voltage, so the signal spreads quickly between nodes."],
+     ["It lowers membrane resistance and raises membrane capacitance","These changes would slow conduction."],
+     ["It adds voltage-gated sodium channels along the internode","Voltage-gated sodium channels are concentrated at the nodes, not under the myelin."],
+     ["It raises the axial resistance of the axoplasm","Myelin does not change the axoplasm, and higher axial resistance would slow conduction."]]},
+ {q:"How does hyperkalemia change the resting membrane potential of a neuron?",
+  a:[["It depolarizes the membrane","A higher potassium level outside the cell makes the potassium equilibrium potential less negative, so the resting potential becomes less negative."],
+     ["It hyperpolarizes the membrane","Hypokalemia hyperpolarizes the membrane."],
+     ["It has no effect","The resting membrane is most permeable to potassium, so the resting potential is sensitive to the potassium level."],
+     ["It reverses the direction of the sodium-potassium pump","The pump keeps moving sodium out and potassium in."]]},
+ {q:"How do M2 muscarinic receptors in the heart signal?",
+  a:[["Through Gi, which lowers cAMP and opens potassium channels","M2 receptors couple to Gi. Adenylyl cyclase is inhibited and potassium channels open, which slows the heart rate."],
+     ["Through Gq, which activates phospholipase C","M1, M3 and M5 receptors couple to Gq."],
+     ["As a ligand-gated cation channel","Nicotinic receptors are ligand-gated cation channels."],
+     ["Through Gs, which raises cAMP","Beta-adrenergic receptors couple to Gs."]]},
+ {q:"Which enzyme is the rate-limiting step in catecholamine synthesis?",
+  a:[["Tyrosine hydroxylase","Tyrosine hydroxylase converts tyrosine to L-DOPA and sets the pace for the whole pathway."],
+     ["DOPA decarboxylase","This enzyme converts L-DOPA to dopamine."],
+     ["Dopamine beta-hydroxylase","This enzyme converts dopamine to norepinephrine."],
+     ["Phenylethanolamine N-methyltransferase","This enzyme converts norepinephrine to epinephrine in the adrenal medulla."]]},
+ {q:"Why is a stronger stimulus needed to fire an action potential during the relative refractory period?",
+  a:[["Some sodium channels are still inactivated and potassium conductance is still high","Fewer sodium channels are available and the extra potassium current opposes depolarization."],
+     ["All of the voltage-gated sodium channels are inactivated","This describes the absolute refractory period, when no stimulus can fire an action potential."],
+     ["The ion gradients have run down","One action potential moves too few ions to change the gradients."],
+     ["The membrane is at the sodium equilibrium potential","During this period the membrane is near or below the resting potential."]]},
+ {q:"What triggers long-term potentiation at CA1 synapses in the hippocampus?",
+  a:[["Calcium entering the postsynaptic cell through NMDA receptors","The rise in postsynaptic calcium activates kinases and leads to more AMPA receptors at the synapse."],
+     ["Chloride entering through GABA-A receptors","Chloride entry is inhibitory."],
+     ["Potassium leaving through channels opened by GABA-B receptors","This hyperpolarizes the cell, which is inhibitory."],
+     ["A fall in calcium entry at the presynaptic terminal","Less presynaptic calcium would reduce neurotransmitter release."]]},
+ {q:"Which fiber type carries fast, sharp, well-localized pain?",
+  a:[["A-delta fibers","A-delta fibers are thinly myelinated and carry fast, sharp pain."],
+     ["C fibers","C fibers are unmyelinated and carry slow, dull or burning pain."],
+     ["A-alpha fibers","A-alpha fibers are the largest fibers. They serve proprioception and somatic motor output."],
+     ["A-beta fibers","A-beta fibers carry touch and pressure."]]},
+ {q:"In the stretch reflex, where do the Ia afferents from a muscle spindle make their excitatory synapse?",
+  a:[["Directly on alpha motor neurons of the same muscle","The stretch reflex is monosynaptic. The Ia afferent excites the alpha motor neurons of the muscle that was stretched."],
+     ["On gamma motor neurons","Gamma motor neurons adjust the sensitivity of the spindle and are driven mainly by descending pathways."],
+     ["On Renshaw cells","Renshaw cells are excited by branches of motor neuron axons and inhibit those motor neurons."],
+     ["On the Golgi tendon organ","The Golgi tendon organ is a separate receptor with its own Ib afferent."]]},
+ {q:"In myasthenia gravis, what do the antibodies most often target?",
+  a:[["Nicotinic acetylcholine receptors on the muscle","Antibodies reduce the number of working receptors on the motor end plate, which causes weakness that worsens with use."],
+     ["Voltage-gated calcium channels on the motor neuron terminal","This describes Lambert-Eaton myasthenic syndrome."],
+     ["Acetylcholinesterase","This enzyme is not the antibody target. Drugs that inhibit it are used to treat the disease."],
+     ["Myelin of peripheral nerves","Immune attack on peripheral myelin describes Guillain-Barré syndrome."]]},
+ {q:"How is most glutamate removed from the synaptic cleft?",
+  a:[["Astrocytes take it up and convert it to glutamine","Transporters on astrocytes remove glutamate, and the glutamine they make is returned to neurons."],
+     ["An enzyme in the cleft breaks it down","This is how acetylcholine is cleared."],
+     ["Monoamine oxidase breaks it down","Monoamine oxidase breaks down monoamines such as dopamine and norepinephrine."],
+     ["It stays bound to the postsynaptic receptors","Glutamate unbinds quickly and is then cleared by transporters."]]}
+]}};
+
+/* ============================== GAME ============================== */
+(function(){
+"use strict";
+const N=7, COLS="ABCDEFG";
+const FLEET=[{name:"carrier",len:4},{name:"cruiser",len:3},{name:"submarine",len:3},{name:"destroyer",len:2}];
+const $=id=>document.getElementById(id);
+const RM=window.matchMedia("(prefers-reduced-motion: reduce)");
+const sleep=ms=>new Promise(r=>setTimeout(r,RM.matches?Math.min(ms,250):ms));
+const rnd=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
+const name=i=>COLS[i%N]+(Math.floor(i/N)+1);
+function el(tag,props,kids){const e=document.createElement(tag);if(props)for(const k in props){if(k==="class")e.className=props[k];else if(k==="text")e.textContent=props[k];else e.setAttribute(k,props[k]);}
+  (kids||[]).forEach(c=>e.appendChild(typeof c==="string"?document.createTextNode(c):c));return e;}
+
+let S=null, topic="anatomy", level="advanced";
+const QS=()=>BANK[topic][level];
+
+/* ---------- sound (all synthesized, no audio files) ---------- */
+let AC=null, soundOn=true, master=null, verb=null, nbuf=null, sea=null;
+function audio(){
+  if(!soundOn) return null;
+  try{
+    if(!AC){
+      const C=window.AudioContext||window.webkitAudioContext; if(!C) return null; AC=new C();
+      const comp=AC.createDynamicsCompressor(); comp.threshold.value=-16; comp.ratio.value=5; comp.connect(AC.destination);
+      master=AC.createGain(); master.gain.value=.9; master.connect(comp);
+      const len=Math.floor(AC.sampleRate*2.4), ir=AC.createBuffer(2,len,AC.sampleRate);
+      for(let ch=0;ch<2;ch++){ const d=ir.getChannelData(ch); for(let k=0;k<len;k++) d[k]=(Math.random()*2-1)*Math.pow(1-k/len,2.8); }
+      verb=AC.createConvolver(); verb.buffer=ir; const vg=AC.createGain(); vg.gain.value=.4; verb.connect(vg); vg.connect(master);
+      const nl=AC.sampleRate*2; nbuf=AC.createBuffer(1,nl,AC.sampleRate); const nd=nbuf.getChannelData(0); for(let k=0;k<nl;k++) nd[k]=Math.random()*2-1;
+    }
+    if(AC.state==="suspended") AC.resume();
+    return AC;
+  }catch(e){ return null; }
+}
+function out(node,wet){ node.connect(master); if(wet){ const g=AC.createGain(); g.gain.value=wet; node.connect(g); g.connect(verb); } }
+function env(g,t,dur,peak,attack){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+(attack||.006)); g.gain.exponentialRampToValueAtTime(.0001,t+dur); }
+function osc(type,f1,f2,at,dur,peak,o){
+  const ac=audio(); if(!ac) return; o=o||{};
+  try{ const t=ac.currentTime+at, n=ac.createOscillator(), g=ac.createGain(); n.type=type; n.frequency.setValueAtTime(f1,t); if(f2) n.frequency.exponentialRampToValueAtTime(f2,t+dur);
+    env(g,t,dur,peak,o.attack); let last=n; if(o.lp){ const f=ac.createBiquadFilter(); f.type="lowpass"; f.frequency.value=o.lp; n.connect(f); last=f; }
+    last.connect(g); out(g,o.wet); n.start(t); n.stop(t+dur+.05); }catch(e){}
+}
+function nz(at,dur,peak,kind,f1,f2,o){
+  const ac=audio(); if(!ac) return; o=o||{};
+  try{ const t=ac.currentTime+at, n=ac.createBufferSource(), f=ac.createBiquadFilter(), g=ac.createGain(); n.buffer=nbuf; f.type=kind; f.Q.value=o.q||.8;
+    f.frequency.setValueAtTime(f1,t); if(f2) f.frequency.exponentialRampToValueAtTime(f2,t+dur);
+    env(g,t,dur,peak,o.attack); n.connect(f); f.connect(g); out(g,o.wet); n.start(t,Math.random(),dur+.05); }catch(e){}
+}
+function bell(f,at,peak,dur){ dur=dur||.8; osc("sine",f,0,at,dur,peak,{wet:.5}); osc("sine",f*2,0,at,dur*.6,peak*.35,{wet:.5}); osc("sine",f*3.01,0,at,dur*.35,peak*.15,{wet:.4}); }
+function ocean(on){
+  if(!on){ if(sea&&AC){ try{ sea.g.gain.setTargetAtTime(.0001,AC.currentTime,.3); sea.n.stop(AC.currentTime+2); sea.l.stop(AC.currentTime+2); }catch(e){} } sea=null; return; }
+  const ac=audio(); if(!ac||sea) return;
+  try{ const n=ac.createBufferSource(), f=ac.createBiquadFilter(), g=ac.createGain(), l=ac.createOscillator(), lg=ac.createGain();
+    n.buffer=nbuf; n.loop=true; f.type="lowpass"; f.frequency.value=420; g.gain.value=.11; l.frequency.value=.14; lg.gain.value=.07;
+    l.connect(lg); lg.connect(g.gain); n.connect(f); f.connect(g); g.connect(master); n.start(); l.start(); sea={n,g,l}; }catch(e){}
+}
+const sfx={
+  launch(){ /* missile: ignition pop, then a rocket roar and hiss that last the whole flight */
+    osc("sine",130,55,0,.16,.5); nz(0,.12,.5,"lowpass",2600,500);
+    nz(.03,.78,.4,"bandpass",420,1900,{q:.5,attack:.1,wet:.25});
+    nz(.05,.76,.2,"highpass",1800,5200,{attack:.18});
+    osc("sawtooth",95,210,.03,.7,.09,{lp:520,attack:.1});
+    osc("sine",1050,380,.3,.45,.03,{attack:.1,wet:.3}); },
+  boom(){ nz(0,1.1,.75,"lowpass",3200,160,{wet:.5}); osc("sine",95,30,0,.7,.8); osc("triangle",190,60,0,.3,.25);
+          for(let k=0;k<6;k++) nz(.08+Math.random()*.6,.06,.18,"highpass",2500,0,{wet:.3}); },
+  splash(){ /* water: a low plunge, a burst of spray, then falling droplets */
+    osc("sine",190,62,0,.2,.5); nz(0,.09,.35,"lowpass",900,300);
+    nz(.02,.34,.42,"bandpass",1500,2600,{q:.5,wet:.3});
+    nz(.06,.9,.2,"highpass",3200,6500,{attack:.07,wet:.3});
+    nz(.3,.7,.1,"bandpass",2400,900,{q:.6,attack:.15});
+    for(let k=0;k<8;k++){ const f=900+Math.random()*1700; osc("sine",f,f*1.6,.22+Math.random()*.75,.05,.05,{wet:.4}); } },
+  ping(){ osc("sine",1250,1230,0,1.1,.07,{wet:.9}); },
+  right(){ bell(880,0,.16); bell(1318.5,.12,.16,1); },
+  wrong(){ osc("triangle",233,220,0,.28,.2,{lp:900,wet:.2}); osc("triangle",175,165,.2,.5,.2,{lp:900,wet:.2}); },
+  sunk(){ osc("sawtooth",120,42,0,1.5,.2,{lp:380,attack:.1,wet:.5}); nz(0,1.4,.2,"lowpass",600,120,{attack:.2});
+          for(let k=0;k<9;k++){ const f=380+Math.random()*500; osc("sine",f,f*1.7,.3+Math.random()*1.2,.09,.07); } },
+  win(){ [523.25,659.25,783.99,1046.5].forEach((f,k)=>bell(f,k*.15,.15,.9)); [523.25,659.25,783.99,1046.5].forEach(f=>bell(f,.7,.1,1.8)); },
+  lose(){ [392,349.23,311.13,261.63].forEach((f,k)=>osc("triangle",f,0,k*.24,.6,.16,{lp:1200,wet:.5})); }
+};
+
+/* ---------- fleet ---------- */
+function makeFleet(){
+  const map=new Array(N*N).fill(-1), ships=[];
+  FLEET.forEach((f,si)=>{
+    for(;;){
+      const horiz=Math.random()<.5, r=rnd(horiz?N:N-f.len+1), c=rnd(horiz?N-f.len+1:N), cells=[];
+      for(let k=0;k<f.len;k++) cells.push(horiz?r*N+c+k:(r+k)*N+c);
+      if(cells.every(i=>map[i]===-1)){ cells.forEach(i=>map[i]=si); ships.push({name:f.name,len:f.len,cells,horiz,hits:0,sunk:false}); break; }
+    }
+  });
+  return {map,ships,shots:new Array(N*N).fill(0)};
+}
+const afloat=f=>f.ships.filter(s=>!s.sunk).length;
+
+/* ---------- boards ---------- */
+function labels(board){
+  const c=board.querySelector(".cols"), r=board.querySelector(".rows"); c.textContent=""; r.textContent="";
+  for(let i=0;i<N;i++){ c.appendChild(el("span",{text:COLS[i]})); r.appendChild(el("span",{text:String(i+1)})); }
+}
+function buildBoards(){
+  labels($("enemyBoard")); labels($("myBoard"));
+  const es=$("enemySea"), ms=$("mySea"); es.textContent=""; ms.textContent="";
+  for(let i=0;i<N*N;i++){
+    const b=el("button",{class:"cell",type:"button","data-i":i,tabindex:i===S.focus?"0":"-1","aria-disabled":"true","aria-label":name(i)+", not fired on"},[el("span",{class:"mark","aria-hidden":"true"})]);
+    es.appendChild(b);
+    const d=el("div",{class:"cell","data-i":i},[el("span",{class:"mark"})]);
+    const si=S.me.map[i];
+    if(si>-1){ const sh=S.me.ships[si], k=sh.cells.indexOf(i); d.classList.add("ship"); d.dataset.o=sh.horiz?"h":"v"; d.dataset.end=k===0?"start":k===sh.len-1?"end":"mid"; }
+    ms.appendChild(d);
+  }
+  describeFleet();
+}
+const eCell=i=>$("enemySea").children[i];
+const mCell=i=>$("mySea").children[i];
+function describeFleet(){
+  const hits=S.me.shots.filter(v=>v===2).length;
+  $("mySea").setAttribute("aria-label","Your fleet. "+afloat(S.me)+" of 4 ships afloat. "+hits+" hits taken.");
+}
+function hud(){
+  $("hudEnemy").textContent=afloat(S.enemy)+" of 4";
+  $("hudMe").textContent=afloat(S.me)+" of 4";
+  $("hudQ").textContent=S.correct+" of "+S.asked;
+}
+function setTargeting(on,hint){
+  $("enemySea").classList.toggle("targeting",on);
+  [...$("enemySea").children].forEach(b=>b.setAttribute("aria-disabled",on&&!b.classList.contains("shot")?"false":"true"));
+  $("enemyHint").textContent=hint; $("enemyHint").classList.toggle("go",on);
+}
+function say(msg){ const l=$("live"); l.textContent=""; setTimeout(()=>{l.textContent=msg;},60); }
+function toast(board,msg){
+  const t=el("div",{class:"toast",text:msg}); board.appendChild(t);
+  if(!RM.matches) t.animate([{opacity:0,transform:"translate(-50%,-30%) scale(.8)"},{opacity:1,transform:"translate(-50%,-50%) scale(1)"}],{duration:260,easing:"ease-out"});
+  setTimeout(()=>t.remove(),1700);
+}
+
+/* ---------- effects ---------- */
+const fx=$("fx");
+const mid=e=>{const r=e.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2};};
+function fly(from,to){
+  sfx.launch();
+  if(RM.matches) return Promise.resolve();
+  const s=el("div",{class:"shell"}); fx.appendChild(s);
+  const mx=(from.x+to.x)/2, my=Math.min(from.y,to.y)-90;
+  const a=s.animate([
+    {transform:`translate(${from.x}px,${from.y}px) scale(.6)`,opacity:.9},
+    {transform:`translate(${mx}px,${my}px) scale(1.7)`,opacity:1,offset:.5},
+    {transform:`translate(${to.x}px,${to.y}px) scale(.7)`,opacity:1}
+  ],{duration:720,easing:"cubic-bezier(.4,.1,.7,.9)"});
+  return a.finished.catch(()=>{}).then(()=>s.remove());
+}
+function boom(p,board){
+  sfx.boom();
+  if(RM.matches) return;
+  const f=el("div",{class:"flash"}); fx.appendChild(f);
+  f.animate([{transform:`translate(${p.x}px,${p.y}px) scale(.3)`,opacity:1},{transform:`translate(${p.x}px,${p.y}px) scale(2.2)`,opacity:0}],{duration:520,easing:"ease-out"}).finished.catch(()=>{}).then(()=>f.remove());
+  for(let i=0;i<12;i++){
+    const s=el("div",{class:"spark"}); fx.appendChild(s);
+    const ang=Math.PI*2*i/12+Math.random()*.4, d=38+Math.random()*48;
+    s.animate([{transform:`translate(${p.x}px,${p.y}px) scale(1)`,opacity:1},{transform:`translate(${p.x+Math.cos(ang)*d}px,${p.y+Math.sin(ang)*d}px) scale(.2)`,opacity:0}],{duration:520+Math.random()*260,easing:"ease-out"}).finished.catch(()=>{}).then(()=>s.remove());
+  }
+  if(board) board.animate([{transform:"translate(0,0)"},{transform:"translate(-7px,4px)"},{transform:"translate(6px,-4px)"},{transform:"translate(-4px,2px)"},{transform:"translate(0,0)"}],{duration:380});
+}
+function splash(p){
+  sfx.splash();
+  if(RM.matches) return;
+  [0,140].forEach(delay=>{
+    const r=el("div",{class:"ring"}); fx.appendChild(r);
+    r.animate([{transform:`translate(${p.x}px,${p.y}px) scale(.3)`,opacity:.95},{transform:`translate(${p.x}px,${p.y}px) scale(2.8)`,opacity:0}],{duration:620,delay,easing:"ease-out",fill:"both"}).finished.catch(()=>{}).then(()=>r.remove());
+  });
+}
+function fireworks(){
+  if(RM.matches) return;
+  for(let i=0;i<7;i++) setTimeout(()=>boomQuiet({x:window.innerWidth*(.15+Math.random()*.7),y:80+Math.random()*260}),i*260);
+}
+function boomQuiet(p){ const keep=soundOn; soundOn=false; boom(p,null); soundOn=keep; }
+
+/* ---------- questions ---------- */
+function draw(){
+  const due=S.retry.findIndex(r=>r.at<=S.asked);
+  if(due>-1) return S.retry.splice(due,1)[0].qi;
+  if(!S.deck.length) S.deck=shuffle(QS().map((_,i)=>i)).filter(i=>i!==S.last||QS().length<2);
+  return S.deck.pop();
+}
+function nextQuestion(){
+  S.phase="question"; setTargeting(false,"Answer a question to earn a shot");
+  const qi=draw(); S.last=qi; const q=QS()[qi];
+  const order=shuffle([0,1,2,3]);
+  const h=el("h3",{id:"qText",tabindex:"-1",text:q.q});
+  const list=el("ul",{class:"opts","aria-labelledby":"qText"});
+  order.forEach((ai,pos)=>{
+    const b=el("button",{class:"opt",type:"button"},[el("span",{class:"key","aria-hidden":"true",text:"ABCD"[pos]}),el("span",{text:q.a[ai][0]})]);
+    b.addEventListener("click",()=>answer(qi,order,pos));
+    list.appendChild(el("li",null,[b]));
+  });
+  const card=el("div",{class:"card"},[el("p",{class:"eyebrow",text:"Question "+(S.asked+1)}),h,list]);
+  $("panel").textContent=""; $("panel").appendChild(card);
+  h.focus({preventScroll:true}); reveal(card);
+}
+function answer(qi,order,pos){
+  if(S.phase!=="question") return;
+  S.phase="feedback"; S.asked++;
+  const q=QS()[qi], ok=order[pos]===0;
+  if(ok){ S.correct++; sfx.right(); } else { sfx.wrong(); S.missed.add(qi); S.retry.push({qi,at:S.asked+3}); }
+  hud();
+  const head=el("p",{class:"big",id:"fbHead",tabindex:"-1",text:ok?"Correct. Fire on any square.":"Not quite. The enemy gets a shot."});
+  const list=el("ul",{class:"opts"});
+  order.forEach((ai,p)=>{
+    const right=ai===0, picked=p===pos;
+    const tag=right?(picked?"Correct answer, your choice":"Correct answer"):(picked?"Your choice":"Not correct");
+    list.appendChild(el("li",{class:"res"+(right?" right":"")+(picked?" picked":"")},[el("b",{text:q.a[ai][0]}),el("span",{class:"tag",text:tag}),el("p",{text:q.a[ai][1]})]));
+  });
+  const go=el("button",{class:"btn dark",type:"button",text:ok?"Go to the grid":"Continue"});
+  go.addEventListener("click",()=>{ if(!ok) return enemyTurn(); if(S.phase==="fire"){ eCell(S.focus).focus({preventScroll:true}); reveal($("enemyBoard")); } });
+  const card=el("div",{class:"card"},[el("p",{class:"eyebrow",text:"Why each answer is right or wrong"}),head,go,el("p",{text:q.q}),list]);
+  $("panel").textContent=""; $("panel").appendChild(card);
+  head.focus({preventScroll:true}); reveal(card);
+  if(ok){ S.phase="fire"; setTargeting(true,"Your shot: click any square"); if(S.enemy.shots[S.focus]){ const free=S.enemy.shots.findIndex(v=>!v); if(free>-1) moveFocus(free,false); } }
+  say(ok?"Correct. Pick any square on the enemy grid to fire.":"Not quite.");
+}
+function reveal(node){ try{ node.scrollIntoView({block:"nearest",behavior:RM.matches?"auto":"smooth"}); }catch(e){} }
+function status(title,text){
+  const card=el("div",{class:"card"},[el("p",{class:"eyebrow",text:"Status"}),el("p",{class:"big",text:title}),el("p",{text:text||""})]);
+  $("panel").textContent=""; $("panel").appendChild(card);
+}
+
+/* ---------- player fires ---------- */
+function enterFire(msg){
+  S.phase="fire"; setTargeting(true,"Your shot: click any square");
+  status("Your shot",msg+" Click any square. Enemy ships are hidden.");
+  if(S.enemy.shots[S.focus]) { const free=S.enemy.shots.findIndex(v=>!v); if(free>-1) moveFocus(free,false); }
+  const c=eCell(S.focus); c.focus({preventScroll:true}); reveal($("enemyBoard")); sfx.ping();
+}
+function moveFocus(i,focus){
+  eCell(S.focus).tabIndex=-1; S.focus=i; const c=eCell(i); c.tabIndex=0; if(focus!==false) c.focus();
+}
+async function fireAt(i){
+  if(S.phase!=="fire"||S.enemy.shots[i]) return;
+  S.phase="anim"; setTargeting(false,"Firing");
+  const cell=eCell(i);
+  await fly(mid($("mySea")),mid(cell));
+  const si=S.enemy.map[i]; cell.classList.add("shot");
+  if(si===-1){
+    S.enemy.shots[i]=1; cell.classList.add("miss"); cell.setAttribute("aria-label",name(i)+", miss");
+    splash(mid(cell)); status("Miss at "+name(i),"Answer the next question to fire again."); say("Miss at "+name(i)+".");
+    await sleep(1100); if(S.phase==="anim") nextQuestion(); return;
+  }
+  S.enemy.shots[i]=2; const sh=S.enemy.ships[si]; sh.hits++;
+  cell.classList.add("hit"); cell.querySelector(".mark").textContent="✕"; cell.setAttribute("aria-label",name(i)+", hit");
+  boom(mid(cell),$("enemyBoard"));
+  let msg="Hit at "+name(i)+".";
+  if(sh.hits===sh.len){
+    sh.sunk=true; sh.cells.forEach((ci,k)=>{const c=eCell(ci); c.classList.add("ship","sunk"); c.dataset.o=sh.horiz?"h":"v"; c.dataset.end=k===0?"start":k===sh.len-1?"end":"mid"; c.setAttribute("aria-label",name(ci)+", hit, enemy "+sh.name+" sunk");});
+    msg+=" You sank the enemy "+sh.name+"."; toast($("enemyBoard"),"Enemy "+sh.name+" sunk"); await sleep(250); sfx.sunk();
+  }
+  hud(); say(msg);
+  await sleep(900); if(S.phase!=="anim") return;
+  if(afloat(S.enemy)===0) return finish(true);
+  enterFire(msg+" A hit earns another shot.");
+}
+
+/* ---------- enemy fires ---------- */
+function aiPick(){
+  const open=i=>S.me.shots[i]===0;
+  S.ai=S.ai.filter(open);
+  if(S.ai.length) return S.ai.pop();
+  let pool=[]; for(let i=0;i<N*N;i++) if(open(i)&&((i%N)+Math.floor(i/N))%2===0) pool.push(i);
+  if(!pool.length) for(let i=0;i<N*N;i++) if(open(i)) pool.push(i);
+  return pool[rnd(pool.length)];
+}
+async function enemyTurn(){
+  S.phase="enemy"; setTargeting(false,"Enemy is firing");
+  status("Enemy is firing","A wrong answer gives the enemy a shot at your fleet."); reveal($("myBoard"));
+  await sleep(700);
+  for(;;){
+    if(S.phase!=="enemy") return;
+    const i=aiPick(), cell=mCell(i);
+    await fly(mid($("enemySea")),mid(cell));
+    if(S.phase!=="enemy") return;
+    const si=S.me.map[i];
+    if(si===-1){
+      S.me.shots[i]=1; cell.classList.add("miss"); splash(mid(cell));
+      status("The enemy missed at "+name(i),"Your fleet is safe for now."); say("The enemy missed at "+name(i)+"."); describeFleet();
+      await sleep(1200); if(S.phase==="enemy") nextQuestion(); return;
+    }
+    S.me.shots[i]=2; const sh=S.me.ships[si]; sh.hits++;
+    cell.classList.add("hit"); cell.querySelector(".mark").textContent="✕"; boom(mid(cell),$("myBoard"));
+    const r=Math.floor(i/N), c=i%N;
+    [[r-1,c],[r+1,c],[r,c-1],[r,c+1]].forEach(([y,x])=>{ if(y>=0&&y<N&&x>=0&&x<N&&S.me.shots[y*N+x]===0) S.ai.push(y*N+x); });
+    let msg="The enemy hit your "+sh.name+" at "+name(i)+".";
+    if(sh.hits===sh.len){ sh.sunk=true; S.ai=[]; sh.cells.forEach(ci=>mCell(ci).classList.add("sunk")); msg="The enemy sank your "+sh.name+"."; toast($("myBoard"),"Your "+sh.name+" was sunk"); sfx.sunk(); }
+    hud(); describeFleet(); status(msg,"A hit earns the enemy another shot."); say(msg);
+    await sleep(1300);
+    if(afloat(S.me)===0) return finish(false);
+  }
+}
+
+/* ---------- screens ---------- */
+function show(id){
+  const pop=$("pop");
+  if(id==="start"){ if(pop.open) pop.close(); return; }
+  $("play").hidden=id!=="play"; $("end").hidden=id!=="end";
+  if(!pop.open){ if(pop.showModal) pop.showModal(); else pop.setAttribute("open",""); }
+  try{ window.scrollTo(0,0); }catch(e){}
+}
+function start(){
+  audio(); ocean(true);
+  S={phase:"question",enemy:makeFleet(),me:makeFleet(),deck:[],retry:[],last:-1,asked:0,correct:0,missed:new Set(),ai:[],focus:24};
+  show("play"); buildBoards(); hud(); nextQuestion();
+}
+function finish(won){
+  S.phase="end"; setTargeting(false,"");
+  $("endEyebrow").textContent=won?"Mission complete":"Mission over";
+  $("endH").textContent=won?"You sank the enemy fleet.":"Your fleet went down.";
+  $("endLead").textContent=won?"Every shot you fired was earned with a correct answer.":"Review the questions below, then play again to earn more shots.";
+  $("endCorrect").textContent=S.correct; $("endAsked").textContent=S.asked; $("endSunk").textContent=4-afloat(S.enemy);
+  const ul=$("review"); ul.textContent="";
+  S.missed.forEach(qi=>{ const q=QS()[qi]; ul.appendChild(el("li",null,[el("b",{text:q.q}),el("p",{text:"Answer: "+q.a[0][0]+". "+q.a[0][1]})])); });
+  $("reviewH").hidden=ul.hidden=S.missed.size===0;
+  show("end"); $("endH").focus({preventScroll:true}); reveal($("endEyebrow"));
+  if(won){ sfx.win(); fireworks(); } else sfx.lose();
+  say($("endH").textContent);
+}
+function menu(){ show("start"); }
+$("pop").addEventListener("close",()=>{ ocean(false); if(S) S.phase="menu"; document.body.style.minHeight=""; const b=document.querySelector("#startForm .btn"); if(b) b.focus({preventScroll:true}); });
+if(window.ResizeObserver) new ResizeObserver(()=>{ const pop=$("pop"); document.body.style.minHeight=pop.open?(pop.offsetHeight+24)+"px":""; }).observe($("pop"));
+
+/* ---------- events ---------- */
+$("startForm").addEventListener("submit",e=>{ e.preventDefault(); const fd=new FormData(e.target); topic=fd.get("topic")||"anatomy"; level=fd.get("level")||"advanced"; start(); });
+$("againBtn").addEventListener("click",start);
+$("menuBtn").addEventListener("click",menu);
+$("quitBtn").addEventListener("click",menu);
+$("soundBtn").addEventListener("click",e=>{ soundOn=!soundOn; e.currentTarget.setAttribute("aria-pressed",String(soundOn)); e.currentTarget.textContent="Sound: "+(soundOn?"On":"Off"); if(soundOn){ sfx.right(); if($("pop").open) ocean(true); } else ocean(false); });
+$("enemySea").addEventListener("click",e=>{ const b=e.target.closest("button.cell"); if(!b) return; const i=+b.dataset.i; moveFocus(i,false); fireAt(i); });
+$("enemySea").addEventListener("keydown",e=>{
+  const step={ArrowRight:1,ArrowLeft:-1,ArrowDown:N,ArrowUp:-N}[e.key];
+  if(step===undefined) return;
+  e.preventDefault();
+  const i=S.focus, r=Math.floor(i/N), c=i%N;
+  if((step===1&&c===N-1)||(step===-1&&c===0)||(step===N&&r===N-1)||(step===-N&&r===0)) return;
+  moveFocus(i+step);
+});
+})();
+</script>
+
+<!-- Iframe height sender: tells the parent page how tall this page is -->
+<script>
+(function(){
+  var ID="synapse-strike", last=0;
+  function send(){
+    var h=Math.ceil(document.documentElement.getBoundingClientRect().height);
+    if(h===last) return; last=h;
+    try{ window.parent.postMessage({type:"iframe-height",id:ID,height:h},"*"); }catch(e){}
+  }
+  if(window.ResizeObserver){ new ResizeObserver(send).observe(document.documentElement); }
+  window.addEventListener("load",send);
+  window.addEventListener("resize",send);
+  send();
+})();
+</script>
+</body>
+</html>
