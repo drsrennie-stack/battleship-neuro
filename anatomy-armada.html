@@ -109,6 +109,7 @@ h1 span{color:#8A3324}
 .ddbtn:focus-visible{outline:3px solid var(--white);outline-offset:3px}
 .ddmenu{position:absolute;z-index:20;left:0;right:0;top:calc(100% + 6px);background:var(--white);color:var(--ink);border-radius:12px;padding:8px;box-shadow:0 18px 38px rgba(0,0,0,.6)}
 .ddmenu{max-height:min(380px,60vh);overflow:auto}
+.ddmenu:focus{outline:none}
 .ddrow{display:flex;align-items:center;gap:8px;border-top:1px solid #E1E6EA}
 .ddrow:first-child{border-top:0}
 .ddmenu label.ddgroup{flex:1;font-weight:800;font-family:var(--display)}
@@ -205,7 +206,7 @@ button.cell:focus-visible{outline:3px solid var(--gold);outline-offset:-3px;z-in
 .stage.targeting .stagehint{background:var(--gold);color:var(--ink)}
 .field.g3{grid-template-columns:minmax(0,2.1fr) minmax(320px,1fr);grid-template-areas:"stage panel"}
 .field.g3 .enemy,.field.g3 .fleet{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
-@media (max-width:860px){.field.g3{grid-template-columns:minmax(0,1fr);grid-template-areas:"panel" "stage"}.stage{aspect-ratio:3/4.3}}
+@media (max-width:860px){.field.g3{grid-template-columns:minmax(0,1fr);grid-template-areas:"panel" "stage"}.stage{aspect-ratio:3/5.3}}
 /* panel card */
 .card{background:var(--white);color:var(--navy);border-radius:16px;padding:24px;box-shadow:0 14px 34px rgba(0,0,0,.45);animation:rise 320ms ease both}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -296,13 +297,13 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);color:v
         <div class="pickrow">
           <div class="pick" id="topicDD">
             <button type="button" class="ddbtn" id="topicBtn" aria-haspopup="true" aria-expanded="false" aria-controls="topicMenu">Topic</button>
-            <div class="ddmenu" id="topicMenu" role="group" aria-label="Topics" hidden></div>
+            <div class="ddmenu" id="topicMenu" role="group" aria-label="Topics" tabindex="-1" hidden></div>
           </div>
           <div class="pick">
             <label class="sr-only" for="levelSel">Level</label>
             <select class="ddbtn" id="levelSel" name="level">
               <option value="" selected disabled hidden>Level</option>
-              <option value="easy">Easy: key terms</option>
+              <option value="easy">Easy: recall</option>
               <option value="advanced">Advanced: college level</option>
               <option value="expert">Expert: graduate and medical level</option>
             </select>
@@ -1409,8 +1410,8 @@ function el(tag,props,kids){const e=document.createElement(tag);if(props)for(con
 let S=null, POOL=[];
 const QS=()=>POOL;
 /* ---------- subjects, card banks and topics ----------
-   Course cards load from the two course card banks the first time a subject is checked, and count as the
-   Advanced, college level. Each bank is tried at the addresses in "urls", in order, until one loads.
+   Course cards load from the two course card banks the first time a subject is checked. Cards tagged DOK 1
+   are the Easy level, and cards tagged DOK 2 or 3 are the Advanced level. Each bank is tried at the addresses in "urls", in order, until one loads.
    GROUPS sets the body-system headings in the Topic menu. A course topic that is not listed in any
    group appears under "More topics", so new topics in the card banks show up without a code change.
    The built-in starter sets (BANK above) have all three levels and need no card bank file. */
@@ -1448,7 +1449,8 @@ function addBank(subject){
   const bank=window[SUBJECTS[subject].global]; if(!bank||!bank.modules) return false;
   bank.modules.forEach(m=>(m.topics||[]).forEach(tp=>{ if(TOPICS.some(x=>x.key===tp.id)) return;
     let g=GROUPS.find(x=>x.ids.indexOf(tp.id)>-1); if(!g){ g=GROUPS.find(x=>x.name==="More topics"); g.ids.push(tp.id); }   /* a topic not listed above still shows up */
-    TOPICS.push({key:tp.id,name:tp.title,group:g.name,subject,sets:{easy:[],advanced:(tp.cards||[]).map(convCard).filter(Boolean),expert:[]}}); }));
+    const cards=tp.cards||[];
+    TOPICS.push({key:tp.id,name:tp.title,group:g.name,subject,sets:{easy:cards.filter(c=>c.dok===1).map(convCard).filter(Boolean),advanced:cards.filter(c=>c.dok!==1).map(convCard).filter(Boolean),expert:[]}}); }));
   return true;
 }
 function loadBank(subject){
@@ -1516,6 +1518,9 @@ function fadeTheme(to,ms,then){
   themeFade=setInterval(()=>{ const k=Math.min(1,(performance.now()-t0)/ms); a.volume=Math.max(0,Math.min(1,from+(to-from)*k)); if(k>=1){ clearInterval(themeFade); if(then) then(); } },50);
 }
 function introMusic(){ themeWanted=true; if(!soundOn) return; try{ const a=themeEl(); if(a.paused){ a.volume=0; const p=a.play(); if(p&&p.catch) p.catch(()=>{}); } fadeTheme(.8,700); }catch(e){} }
+/* Phones only let sound start from a touch. Any tap, click or key press while the theme should be playing starts it. */
+function nudgeMusic(){ if(!themeWanted||!soundOn||$("pop").open) return; try{ const a=themeEl(); if(a.paused){ const p=a.play(); if(p&&p.catch) p.catch(()=>{}); fadeTheme(.8,700); } }catch(e){} }
+["touchend","click","keydown"].forEach(ev=>document.addEventListener(ev,nudgeMusic,true));
 function stopMusic(){ themeWanted=false; if(!theme) return; fadeTheme(0,1500,()=>{ try{ theme.pause(); }catch(e){} }); }
 function setSound(on){
   soundOn=on; const b=$("soundBtn"), b2=$("soundBtn2");
@@ -1652,7 +1657,7 @@ function boomQuiet(p){ const keep=soundOn; soundOn=false; boom(p,null); soundOn=
    the flat boards instead.
    ========================================================================== */
 const G3=(function(){
-  const CELL=2, CS={enemy:2,me:1.5}, SP={enemy:N*2,me:N*1.5}, GAP=3;
+  const CELL=2, CS={enemy:2,me:1.5}, SP={enemy:N*2,me:N*1.5}, GAP=3;   /* on a tall phone screen the fleet grid is drawn smaller, see reset() */
   let ok=false, R=null, scene, cam, stage, canvas, wu, running=false, last=0, T=0;
   let portrait=false, targeting=false, hover=-1, focus=-1, shake=0, flashLight, onFire=null, isOpen=null;
   const org={enemy:null,me:null};
@@ -1799,7 +1804,7 @@ const G3=(function(){
   }
   function fit(){
     if(!org.enemy) return;
-    const pts=[]; for(const s of ["enemy","me"]){ const o=org[s], k=CS[s]/2, w=SP[s]; pts.push([o.x-1.7*k,o.z-3.3*k],[o.x+w+1*k,o.z-3.3*k],[o.x-1.7*k,o.z+w+.8*k],[o.x+w+1*k,o.z+w+.8*k]); }
+    const pts=[]; for(const s of ["enemy","me"]){ const o=org[s], k=CS[s]/2, w=SP[s]; const top=(portrait&&s==="enemy")?5.6:3.3; pts.push([o.x-1.7*k,o.z-top*k],[o.x+w+1*k,o.z-top*k],[o.x-1.7*k,o.z+w+.8*k],[o.x+w+1*k,o.z+w+.8*k]); }
     let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9; for(const p of pts){ x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[1]);z1=Math.max(z1,p[1]); }
     const el=(portrait?60:52)*Math.PI/180, dir=new THREE.Vector3(0,Math.sin(el),Math.cos(el)), v=new THREE.Vector3();
     look=new THREE.Vector3((x0+x1)/2,0,(z0+z1)/2);
@@ -1815,6 +1820,7 @@ const G3=(function(){
     if(!ok) return;
     clearGroup(dynamic); clearGroup(labels); ships.enemy=[]; ships.me=[]; marks=[]; emitters=[]; missiles=[]; ripples=[]; hits=[]; PA.clear(); PN.clear(); shake=0; hover=focus=-1;
     const w=stage.clientWidth||800, h=stage.clientHeight||600; portrait=w/h<1;
+    CS.me=portrait?1.2:1.5; SP.me=N*CS.me;
     if(portrait){ org.enemy=new THREE.Vector3(-SP.enemy/2,0,-SP.enemy-GAP/2-1.2); org.me=new THREE.Vector3(-SP.me/2,0,GAP/2+1.2); }
     else{ const x0=-(SP.me+GAP+SP.enemy)/2; org.me=new THREE.Vector3(x0,0,-SP.me/2); org.enemy=new THREE.Vector3(x0+SP.me+GAP,0,-SP.enemy/2); }
     wu.uGA.value.set(org.me.x,org.me.z,CS.me,N); wu.uGB.value.set(org.enemy.x,org.enemy.z,CS.enemy,N);
@@ -1954,7 +1960,7 @@ function answer(qi,order,pos){
   const card=el("div",{class:"card"},[el("p",{class:"eyebrow",text:"Why each answer is right or wrong"}),head,go,el("p",{text:q.q}),list]);
   $("panel").textContent=""; $("panel").appendChild(card);
   head.focus({preventScroll:true}); reveal(card);
-  if(ok){ S.phase="fire"; setTargeting(true,"Your shot: click any square"); if(S.enemy.shots[S.focus]){ const free=S.enemy.shots.findIndex(v=>!v); if(free>-1) moveFocus(free,false); } }
+  if(ok){ S.phase="fire"; setTargeting(true,"Your shot: pick any square"); if(S.enemy.shots[S.focus]){ const free=S.enemy.shots.findIndex(v=>!v); if(free>-1) moveFocus(free,false); } }
   say(ok?"Correct. Pick any square on the enemy grid to fire.":"Not quite.");
 }
 function reveal(node){ try{ node.scrollIntoView({block:"nearest",behavior:RM.matches?"auto":"smooth"}); }catch(e){} }
@@ -1965,8 +1971,8 @@ function status(title,text){
 
 /* ---------- player fires ---------- */
 function enterFire(msg){
-  S.phase="fire"; setTargeting(true,"Your shot: click any square");
-  status("Your shot",msg+" Click any square. Enemy ships are hidden.");
+  S.phase="fire"; setTargeting(true,"Your shot: pick any square");
+  status("Your shot",msg+" Pick any square. Enemy ships are hidden.");
   if(S.enemy.shots[S.focus]) { const free=S.enemy.shots.findIndex(v=>!v); if(free>-1) moveFocus(free,false); }
   const c=eCell(S.focus); c.focus({preventScroll:true}); reveal(boardEl("enemy")); sfx.ping();
 }
@@ -2146,7 +2152,7 @@ function refreshPick(ask){
   b.setAttribute("aria-label",tp.length?"Topic: "+b.textContent:"Topic, none chosen");
   const loading=sb.filter(k=>SUBJECTS[k].state==="loading").map(k=>SUBJECTS[k].name), missing=sb.filter(k=>SUBJECTS[k].state==="missing").map(k=>SUBJECTS[k].name);
   $("pickNote").textContent=loading.length?"Loading "+loading.join(" and ")+" cards.":
-    (tp.length&&lv&&!n)?"The topics you checked have no questions at this level yet. Course topics are at the Advanced level.":
+    (tp.length&&lv&&!n)?"The topics you checked have no questions at this level yet. Course topics have Easy and Advanced questions so far.":
     ask===true&&!(sb.length&&tp.length&&lv)?(!sb.length?"Check Anatomy or Physiology to start.":!tp.length?"Choose a topic to start.":"Choose a level to start."):
     missing.length?"The "+missing.join(" and ")+" course cards could not be loaded here, so only the starter set is listed.":"";
 }

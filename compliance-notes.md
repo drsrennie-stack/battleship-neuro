@@ -86,3 +86,12 @@ Not yet tested with a screen reader. The markup was written for screen reader us
 ## 7. Reviewer
 
 Prepared by Claude for Dr. Sharilyn Rennie. Awaiting her review.
+
+## Update, November 15, 2026 (phone layout, levels, music)
+
+- Topic menu: tapping or clicking a body system name now checks it. Before, the menu closed without selecting. Fixed by making the menu container focusable by script only (tabindex -1). Keyboard order is unchanged.
+- Phone layout: single column, question card first, battlefield below. Enemy grid squares are about 39 px wide on a 390 px phone, which meets the WCAG 2.2 minimum target size of 24 px (2.5.8, AA) but not the 44 px AAA size (2.5.5). The keyboard and screen reader grid is unchanged.
+- Wording: "click" changed to "pick" so the hints fit touch, mouse and keyboard.
+- Levels: Easy uses course cards tagged DOK 1. Advanced uses DOK 2 and 3. Expert has starter sets only so far.
+- Music: the theme now starts on the first tap, click or key press if the browser blocked it at page load. The music note button still turns all sound off (1.4.2 Audio Control).
+- Tested on an emulated iPhone 13 in Chromium only. Not yet tested on a real phone or with a phone screen reader (VoiceOver, TalkBack).
