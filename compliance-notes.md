@@ -77,8 +77,8 @@ Not yet tested with a screen reader. The markup was written for screen reader us
 
 - The 3D battlefield is drawn on a canvas that is hidden from assistive technology. The regular grid buttons stay in the page for keyboard and screen reader use, and the square in focus is highlighted in the 3D view. Mouse and touch players click the 3D grid directly.
 - If the 3D library cannot load, WebGL is unavailable, or the player has "reduce motion" turned on, the game uses the flat boards.
-- The opening intro starts only after the player presses Press start, runs for about 24 seconds, and has a Skip intro button the whole time (WCAG 2.2.2). The directions are also in the How to play window, opened with the "?" button. With "reduce motion" on, the intro is skipped entirely.
-- Theme music starts only after the player presses a button, and a sound button in the banner turns it off (WCAG 1.4.2). It fades out when the game starts.
+- The opening intro plays by itself when the page loads. It tells a short story for about 40 seconds, with each line on screen for about six seconds, then waits on the title for the player to press Press start. A Skip intro button is there the whole time (WCAG 2.2.2). The directions are also in the How to play window, opened with the "?" button. With "reduce motion" on, the intro is skipped entirely.
+- Theme music starts with the intro where the browser allows it, and otherwise when the player presses Press start or Skip intro, and a sound button in the banner turns it off (WCAG 1.4.2). It fades out when the game starts.
 - Screen reader testing is still needed. Plan: run one full game in VoiceOver or NVDA and confirm the announcements read in a sensible order.
 - A blind player can fire on the enemy grid and hears every result, but the layout of their own fleet is summarized (ships afloat and hits taken) instead of read square by square.
 - Sound effects have no captions. Every sound has a matching text announcement, and sound can be turned off.

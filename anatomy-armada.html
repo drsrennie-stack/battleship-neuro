@@ -73,23 +73,26 @@ h1 span{color:#8A3324}
 .intro{position:fixed;inset:0;z-index:100;background:#060B1A;display:grid;place-items:center;overflow:hidden;transition:opacity .8s ease}
 .intro.bye{opacity:0;pointer-events:none}
 .introstage{position:absolute;inset:0;display:grid;place-items:center}
-#introStart{position:relative;z-index:2;font-size:15px;padding:18px 40px;animation:pulse 1.6s ease-in-out infinite alternate}
+.intro:focus{outline:none}
+.introcta{position:absolute;left:0;right:0;bottom:9%;z-index:3;display:flex;justify-content:center;opacity:0;pointer-events:none;transition:opacity 1.8s ease}
+.introcta.on{opacity:1;pointer-events:auto}
+#introStart{font-size:15px;padding:18px 40px}
+#introStart:focus-visible,#introSkip:focus-visible{outline:2px solid var(--white);outline-offset:4px}
 #introSkip{position:absolute;right:18px;bottom:18px;z-index:3}
-.iscene{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:0 28px;opacity:0;transition:opacity 1.1s ease}
+.iscene{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:0 28px;opacity:0;transition:opacity 1.5s ease}
 .iscene.on{opacity:1}
-.iphrase{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,4.6vw,3.4rem);line-height:1.2;letter-spacing:-.01em;margin:0;transform:translateY(12px);transition:transform 1.8s ease}
+.iphrase{font-family:var(--display);font-weight:700;font-size:clamp(1.5rem,3.8vw,2.9rem);line-height:1.3;letter-spacing:-.01em;margin:0;max-width:20em;transform:translateY(12px);transition:transform 2.4s ease}
 .iscene.on .iphrase{transform:none}
 .iphrase b{font-weight:800;color:#D2604E}
 .ifinal{position:absolute;inset:0;opacity:0;transition:opacity 1.3s ease}
 .ifinal.on{opacity:1}
 .ifinal img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:60% 50%;animation:slowzoom 7s ease-out both}
 .ifinal::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,11,26,.98) 0%,rgba(6,11,26,.8) 30%,rgba(6,11,26,.1) 70%)}
-.ititle{position:absolute;left:0;right:0;bottom:13%;z-index:1;text-align:center;padding:0 16px;opacity:0;transform:scale(1.08);transition:opacity 1.4s ease .4s,transform 1.6s cubic-bezier(.2,.7,.1,1) .4s}
+.ititle{position:absolute;left:0;right:0;bottom:26%;z-index:1;text-align:center;padding:0 16px;opacity:0;transform:scale(1.08);transition:opacity 1.4s ease .4s,transform 1.6s cubic-bezier(.2,.7,.1,1) .4s}
 .ifinal.on .ititle{opacity:1;transform:none}
 .ititle b{display:block;font-family:var(--display);font-weight:800;font-size:clamp(3rem,11vw,8rem);line-height:1.02;letter-spacing:-.02em}
 .ititle b span{color:#8A3324}
 @keyframes slowzoom{from{transform:scale(1.1)}to{transform:scale(1)}}
-@keyframes pulse{from{filter:brightness(1)}to{filter:brightness(1.25)}}
 .subjrow{display:flex;flex-wrap:wrap;gap:8px 26px;margin:0 0 14px}
 .chip{position:relative;cursor:pointer}
 .chip input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
@@ -334,9 +337,9 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);color:v
   </div>
 </dialog>
 
-<div class="intro" id="intro" role="dialog" aria-label="Vital Strike intro" hidden>
+<div class="intro" id="intro" role="dialog" aria-label="Vital Strike intro" tabindex="-1" hidden>
   <div class="introstage" id="introStage" aria-hidden="true"></div>
-  <button class="btn" id="introStart" type="button">Press start</button>
+  <div class="introcta" id="introCta"><button class="btn" id="introStart" type="button">Press start</button></div>
   <button class="btn ghost" id="introSkip" type="button">Skip intro</button>
 </div>
 
@@ -2067,29 +2070,39 @@ if(window.ResizeObserver) new ResizeObserver(()=>{ const pop=$("pop"); document.
 (function(){
   const intro=$("intro"), stage=$("introStage"), startB=$("introStart"), skipB=$("introSkip"), wrap=document.querySelector(".wrap");
   if(RM.matches){ $("replayBtn").hidden=true; return; }      /* reduced motion: no intro. The directions are in the How to play window. */
-  const data=[...$("steps").children].map(li=>({k:li.querySelector("strong").textContent,r:li.querySelector("span").textContent}));
-  let timers=[]; const later=(fn,ms)=>timers.push(setTimeout(fn,ms)), STEP=3600, SHOW=2500;
+  /* The opening story. Each line is [text before, the words shown in red, text after].
+     STEP is how long each line gets in milliseconds, and SHOW is how long it stays up before it starts to fade. */
+  const STORY=[
+    ["Somewhere in the body, an ","enemy fleet"," has slipped into the water."],
+    ["You are ","in command"," of the fleet that defends it."],
+    ["Your knowledge of anatomy and physiology is your ","ammunition","."],
+    ["Each ","right answer"," fires a shot, and each wrong answer lets the enemy fire back."],
+    ["Choose your topic and level, then ","sink"," all four enemy ships to win."]
+  ];
+  let timers=[]; const later=(fn,ms)=>timers.push(setTimeout(fn,ms)), STEP=7000, SHOW=5600;
+  const cta=$("introCta");
   function close(){
-    timers.forEach(clearTimeout); timers=[]; introMusic(); wrap.inert=false; intro.classList.add("bye");
+    timers.forEach(clearTimeout); timers=[]; introMusic(); wrap.inert=false; cta.classList.remove("on"); intro.classList.add("bye");
     setTimeout(()=>{ intro.hidden=true; intro.classList.remove("bye"); stage.textContent=""; },820);
     $("sb_anatomy").focus({preventScroll:true});
   }
   function scene(node,at,hold){ later(()=>{ stage.appendChild(node); requestAnimationFrame(()=>requestAnimationFrame(()=>node.classList.add("on"))); },at);
-    if(hold){ later(()=>node.classList.remove("on"),at+hold); later(()=>node.remove(),at+hold+1200); } }
+    if(hold){ later(()=>node.classList.remove("on"),at+hold); later(()=>node.remove(),at+hold+1600); } }
+  /* The story plays by itself. When it ends, the title stays up and the Press start button fades in. */
   function play(){
-    startB.hidden=true; stage.textContent=""; introMusic();
-    data.forEach((d,k)=>scene(el("div",{class:"iscene"},[el("p",{class:"iphrase"},[el("b",{text:d.k})," "+d.r])]),500+k*STEP,SHOW));
-    const end=500+data.length*STEP;
+    stage.textContent=""; cta.classList.remove("on"); introMusic();          /* music starts here if the browser allows it, otherwise at Press start */
+    STORY.forEach((d,k)=>scene(el("div",{class:"iscene"},[el("p",{class:"iphrase"},[d[0],el("b",{text:d[1]}),d[2]])]),900+k*STEP,SHOW));
+    const end=900+STORY.length*STEP;
     scene(el("div",{class:"ifinal"},[el("img",{src:document.querySelector(".heroimg").src,alt:""}),
       el("div",{class:"ititle"},[el("p",{class:"eyebrow",text:"Anatomy and Physiology Review"}),el("b",null,["Vital ",el("span",{text:"Strike"})])])]),end,0);
-    later(close,end+5200);
+    later(()=>{ cta.classList.add("on"); skipB.hidden=true; },end+2600);
   }
-  function open(gate){ timers.forEach(clearTimeout); timers=[]; intro.hidden=false; wrap.inert=true; stage.textContent=""; startB.hidden=!gate; if(gate) startB.focus({preventScroll:true}); else { play(); skipB.focus({preventScroll:true}); } }
-  startB.addEventListener("click",()=>{ play(); skipB.focus({preventScroll:true}); });
+  function open(){ timers.forEach(clearTimeout); timers=[]; skipB.hidden=false; intro.hidden=false; wrap.inert=true; intro.focus({preventScroll:true}); play(); }
+  startB.addEventListener("click",close);
   skipB.addEventListener("click",close);
-  intro.addEventListener("keydown",e=>{ if(e.key==="Escape") close(); });
-  $("replayBtn").addEventListener("click",()=>{ $("help").close(); if($("pop").open) $("pop").close(); open(false); });
-  open(true);
+  intro.addEventListener("keydown",e=>{ if(e.key==="Escape"||(e.key==="Enter"&&e.target===intro&&cta.classList.contains("on"))) close(); });
+  $("replayBtn").addEventListener("click",()=>{ $("help").close(); if($("pop").open) $("pop").close(); open(); });
+  open();
 })();
 
 /* ---------- How to play window ---------- */
