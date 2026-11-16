@@ -348,7 +348,7 @@ footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);color:v
 
   </main>
 
-  <footer>Created by Dr. Sharilyn Rennie <span id="build" style="opacity:.55;font-size:.75em">Build 1115-9</span><span id="musicCredit" hidden style="display:block;margin-top:4px"></span></footer>
+  <footer>Created by Dr. Sharilyn Rennie <span id="build" style="opacity:.55;font-size:.75em">Build 1115-10</span><span id="musicCredit" hidden style="display:block;margin-top:4px"></span></footer>
 </div>
 
 
@@ -2198,7 +2198,7 @@ const pickedSubjects=()=>subjBoxes.filter(b=>b.checked).map(b=>b.value);
 const pickedTopics=()=>topicBoxes.filter(b=>b.checked).map(b=>b.value);
 const openGroups=new Set();
 function buildMenu(){
-  const keep=new Set(pickedTopics()), sb=pickedSubjects(), menu=$("topicMenu"); menu.textContent=""; topicBoxes=[]; groupBoxes=[];
+  const keep=new Set(pickedTopics()), whole=new Set(groupBoxes.filter(g=>g.boxes.length&&g.boxes.every(b=>b.checked)).map(g=>g.name)), sb=pickedSubjects(), menu=$("topicMenu");   /* a body system that was fully checked stays fully checked when a second subject adds topics to it */ menu.textContent=""; topicBoxes=[]; groupBoxes=[];
   if(!sb.length){ menu.appendChild(el("p",{class:"ddempty",text:"Check Anatomy or Physiology first."})); return; }
   GROUPS.forEach((g,gi)=>{
     const members=g.ids.map(id=>TOPICS.find(x=>x.key===id)).filter(x=>x&&sb.indexOf(x.subject)>-1); if(!members.length) return;
@@ -2206,7 +2206,7 @@ function buildMenu(){
     const more=el("button",{type:"button",class:"ddmore","aria-expanded":String(open),"aria-controls":"tl_"+gi,"aria-label":"Show the topics in "+g.name,text:open?"\u2212":"+"});
     const list=el("div",{id:"tl_"+gi,class:"ddlist"}); list.hidden=!open;
     menu.appendChild(el("div",{class:"ddrow"},[el("label",{class:"ddgroup",for:"tg_"+gi},[gb,g.name]),more])); menu.appendChild(list);
-    const boxes=members.map(x=>{ const b=el("input",{type:"checkbox",id:"tp_"+x.key,value:x.key}); b.checked=keep.has(x.key);
+    const boxes=members.map(x=>{ const b=el("input",{type:"checkbox",id:"tp_"+x.key,value:x.key}); b.checked=keep.has(x.key)||whole.has(g.name);
       list.appendChild(el("label",{for:"tp_"+x.key},[b,el("span",{text:x.name}),el("span",{class:"tag",text:SUBJECTS[x.subject].name})])); topicBoxes.push(b); return b; });
     gb.addEventListener("change",()=>{ boxes.forEach(b=>b.checked=gb.checked); });
     more.addEventListener("click",()=>{ const o=list.hidden; list.hidden=!o; more.setAttribute("aria-expanded",String(o)); more.textContent=o?"\u2212":"+"; if(o) openGroups.add(g.name); else openGroups.delete(g.name); });
@@ -2224,7 +2224,8 @@ function refreshPick(ask){
   $("pickNote").textContent=loading.length?"Loading "+loading.join(" and ")+" cards.":
     (tp.length&&lv&&!n)?"The topics you checked have no questions at this level yet. Course topics have Easy and Advanced questions. Expert is ready for Cardiovascular (check Physiology) and the starter sets.":
     ask===true&&!(sb.length&&tp.length&&lv)?(!sb.length?"Check Anatomy or Physiology to start.":!tp.length?"Choose a topic to start.":"Choose a level to start."):
-    missing.length?"The "+missing.join(" and ")+" course cards could not be loaded here, so only the starter set is listed.":"";
+    missing.length?"The "+missing.join(" and ")+" course cards could not be loaded here, so only the starter set is listed.":
+    (tp.length&&lv&&n)?n.toLocaleString()+" questions in this set.":"";
 }
 subjBoxes.forEach(box=>box.addEventListener("change",()=>{
   buildMenu(); refreshPick();
